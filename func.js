@@ -155,6 +155,7 @@ function build3DPlan() {
     if (!threeDState.initialized) return;
 
     clear3DPlan();
+    threeDState.planGroup.position.set(0, 0, 0);
 
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xbfc7d5, roughness: 0.72, metalness: 0.05 });
     const topMaterial = new THREE.MeshStandardMaterial({ color: 0xe6ebf4, roughness: 0.84, metalness: 0.02 });
@@ -211,8 +212,11 @@ function build3DPlan() {
         const maxDim = Math.max(size.x, size.z, 5);
         const distance = maxDim * 1.2;
 
-        threeDState.camera.position.set(center.x + distance, Math.max(size.y + 2, 5), center.z + distance);
-        threeDState.controls.target.set(center.x, 0.5, center.z);
+        // Recenter geometry so the plan sits around world origin.
+        threeDState.planGroup.position.set(-center.x, 0, -center.z);
+
+        threeDState.camera.position.set(distance, Math.max(size.y + 2, 5), distance);
+        threeDState.controls.target.set(0, 0.5, 0);
         threeDState.controls.update();
 
         const roofGeometry = new THREE.PlaneGeometry(maxDim * 1.5, maxDim * 1.5);
