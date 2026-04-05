@@ -760,6 +760,74 @@ document.getElementById('sizePolice').addEventListener("input", function () {
     document.getElementById('labelBox').style.fontSize = this.value + 'px';
 });
 
+document.getElementById('export_project').addEventListener("click", function () {
+    // Ensure latest state is captured before export.
+    save();
+
+    const payload = {
+        version: "1.0",
+        createdAt: new Date().toISOString(),
+        history: HISTORY,
+        historyIndex: HISTORY.index
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'home-rough-project.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    $('#boxinfo').html('Project exported');
+});
+
+document.getElementById('import_project').addEventListener("click", function () {
+    document.getElementById('projectFileInput').click();
+});
+
+document.getElementById('projectFileInput').addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+
+            if (!parsed || !Array.isArray(parsed.history) || typeof parsed.historyIndex !== 'number') {
+                $('#boxinfo').html('Invalid project file');
+                return;
+            }
+
+            localStorage.setItem('history', JSON.stringify(parsed.history));
+            HISTORY = parsed.history;
+            HISTORY.index = parsed.historyIndex;
+
+            // Load the last valid step from imported history.
+            let targetIndex = parsed.history.length - 1;
+            if (targetIndex < 0) {
+                $('#boxinfo').html('Imported project is empty');
+                return;
+            }
+
+            load(targetIndex, "boot");
+            HISTORY.index = parsed.history.length;
+            $('#undo').removeClass('disabled');
+            $('#redo').addClass('disabled');
+            $('#boxinfo').html('Project imported');
+            fonc_button('select_mode');
+        } catch (err) {
+            $('#boxinfo').html('Import failed: invalid JSON');
+        }
+    };
+
+    reader.readAsText(file);
+    // Reset to allow selecting same file again.
+    this.value = '';
+});
+
 $('#textToLayer').on('hidden.bs.modal', function (e) {
     fonc_button('select_mode');
     action = 0;
