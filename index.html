@@ -180,6 +180,14 @@
       <input type="range" id="bboxHeight" step="1" class="range" />
     </section>
 
+    <section id="imageScaleControl" style="display:none;">
+      <hr />
+      <p><i class="fa fa-search-plus" aria-hidden="true"></i> Scale : <span id="imageScaleVal">100</span> %</p>
+      <input type="range" id="imageScale" step="5" class="range" min="10" max="300" value="100" />
+      <p><i class="fa fa-adjust" aria-hidden="true"></i> Opacity : <span id="imageOpacityVal">50</span> %</p>
+      <input type="range" id="imageOpacity" step="5" class="range" min="5" max="100" value="50" />
+    </section>
+
     <section id="objBoundingBoxRotation">
       <p><i class="fa fa-compass" aria-hidden="true"></i> Rotation : <span id="bboxRotationVal"></span> °</p>
       <input type="range" id="bboxRotation" step="1" class="range" min="-180" max="180" />
@@ -373,6 +381,8 @@
           title="Add a measurement">MEASURE</button></li>
       <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
           title="Add text">TEXT</button></li>
+      <li><button class="btn btn-light shadow fully " id="image_mode" data-toggle="tooltip" data-placement="right"
+          title="Add image">IMAGE</button></li>
       <br />
       <div id="door_list" class="list-unstyled sub"
         style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;width:150px">
@@ -570,12 +580,11 @@
   <div style="position:absolute;bottom:10px;left:210px;font-size:1.5em;color:#08d" id="boxinfo">
   </div>
 
+  <!-- Hidden file input for image selection -->
+  <input type="file" id="imageFileInput" accept="image/*" style="display:none;" />
+
   <div id="moveBox"
     style="position:absolute;right:-150px;top:10px;color:#08d;background:transparent;z-index:2;text-align:center;transition-duration: 0.2s;transition-timing-function: ease-in;">
-    <p style="margin:0px 0 0 0;font-size:11px" onclick="document.location='https://github.com/ekymoz/homeRoughEditor'">
-      <img src="https://cdn4.iconfinder.com/data/icons/mathematics-doodle-3/48/102-128.png" width=20px /> Home Rough
-      Editor
-    </p>
     <div class="pull-right" style="margin:10px">
       <p style="margin:0"><button class="btn btn-xs btn-info zoom" data-zoom="zoomtop"
           style="box-shadow:2px 2px 3px #ccc;"><i class="fa fa-arrow-up" aria-hidden="true"></i></button></p>

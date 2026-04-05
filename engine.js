@@ -9,14 +9,14 @@ $(document).on('click', '#lin', function (event) {
 document.querySelector('#panel').addEventListener('mousemove', function (event) {
   if ((mode == 'line_mode' || mode == 'partition_mode') && action == 1) {
     action = 0;
-    if (typeof (binder) != 'undefined') {
+    if (binder) {
       binder.remove();
-      delete binder;
+      binder = null;
     }
     $('#linetemp').remove();
     $('#line_construc').remove();
     lengthTemp.remove();
-    delete lengthTemp;
+    lengthTemp = null;
   }
 });
 
@@ -84,11 +84,19 @@ function _MOUSEMOVE(event) {
   }
 
   //**************************************************************************
+  //********************   IMAGE   MODE **************************************
+  //**************************************************************************
+  if (mode == 'image_mode') {
+    snap = calcul_snap(event, grid_snap);
+    cursor('crosshair');
+  }
+
+  //**************************************************************************
   //**************        OBJECT   MODE **************************************
   //**************************************************************************
   if (mode == 'object_mode') {
     snap = calcul_snap(event, grid_snap);
-    if (typeof (binder) == 'undefined') {
+    if (!binder) {
       $('#object_list').hide(200);
       if (modeOption == 'simpleStair') binder = new editor.obj2D("free", "stair", "simpleStair", snap, 0, 0, 0, "normal", 0, 15);
       else {
@@ -154,7 +162,7 @@ function _MOUSEMOVE(event) {
   //**************************************************************************
   if (mode == 'distance_mode') {
     snap = calcul_snap(event, grid_snap);
-    if (typeof (binder) == 'undefined') {
+    if (!binder) {
       cross = qSVG.create("boxbind", "path", {
         d: "M-3000,0 L3000,0 M0,-3000 L0,3000",
         "stroke-width": 0.5,
@@ -213,9 +221,9 @@ function _MOUSEMOVE(event) {
     snap = calcul_snap(event, grid_snap);
     var roomTarget;
     if (roomTarget = editor.rayCastingRoom(snap)) {
-      if (typeof (binder) != 'undefined') {
+      if (binder) {
         binder.remove();
-        delete binder;
+        binder = null;
       }
 
       var pathSurface = roomTarget.coords;
@@ -250,7 +258,7 @@ function _MOUSEMOVE(event) {
     else {
       if (typeof (binder) != 'undefined') {
         binder.remove();
-        delete binder;
+        binder = null;
       }
     }
   }
@@ -265,7 +273,7 @@ function _MOUSEMOVE(event) {
     if (wallSelect = editor.nearWall(snap)) {
       var wall = wallSelect.wall;
       if (wall.type != 'separate') {
-        if (typeof (binder) == 'undefined') {
+        if (!binder) {
           // family, classe, type, pos, angle, angleSign, size, hinge, thick
           binder = new editor.obj2D("inWall", "doorWindow", modeOption, wallSelect, 0, 0, 60, "normal", wall.thick);
           var angleWall = qSVG.angleDeg(wall.start.x, wall.start.y, wall.end.x, wall.end.y);
@@ -324,7 +332,7 @@ function _MOUSEMOVE(event) {
     else {
       if (typeof (binder) != 'undefined') {
         binder.graph.remove();
-        delete binder;
+        binder = null;
       }
     }
   } // END DOOR MODE
@@ -337,7 +345,7 @@ function _MOUSEMOVE(event) {
 
     snap = calcul_snap(event, grid_snap);
 
-    if (typeof (binder) == 'undefined') {
+    if (!binder) {
       if (addNode = editor.nearWall(snap, 30)) {
         var x2 = addNode.wall.end.x;
         var y2 = addNode.wall.end.y;
@@ -375,11 +383,11 @@ function _MOUSEMOVE(event) {
         }
         else {
           binder.remove();
-          delete binder;
+          binder = null;
         }
       } else {
         binder.remove();
-        delete binder;
+        binder = null;
       }
     }
   } // END NODE MODE
@@ -401,13 +409,13 @@ function _MOUSEMOVE(event) {
       }
     }
     if (objTarget !== false) {
-      if (typeof (binder) != 'undefined' && (binder.type == 'segment')) {
+      if (binder && binder.type == 'segment') {
         binder.graph.remove();
-        delete binder;
+        binder = null;
         cursor('default');
       }
       if (objTarget.params.bindBox) { // OBJ -> BOUNDINGBOX TOOL
-        if (typeof (binder) == 'undefined') {
+        if (!binder) {
           binder = new editor.obj2D("free", "boundingBox", "", objTarget.bbox.origin, objTarget.angle, 0, objTarget.size, "normal", objTarget.thick, objTarget.realBbox);
           binder.update();
           binder.obj = objTarget;
@@ -420,7 +428,7 @@ function _MOUSEMOVE(event) {
         }
       }
       else {  // DOOR, WINDOW, APERTURE.. -- OBJ WITHOUT BINDBOX (params.bindBox = False) -- !!!!
-        if (typeof (binder) == 'undefined') {
+        if (!binder) {
           var wallList = editor.rayCastingWall(objTarget);
           if (wallList.length > 1) wallList = wallList[0];
           inWallRib(wallList);
@@ -449,10 +457,10 @@ function _MOUSEMOVE(event) {
       }
     }
     else {
-      if (typeof (binder) != 'undefined') {
-        if (typeof (binder.graph) != 'undefined') binder.graph.remove();
+      if (binder) {
+        if (binder.graph) binder.graph.remove();
         if (binder.type == 'node') binder.remove();
-        delete binder;
+        binder = null;
         cursor('default');
         rib();
 
@@ -461,7 +469,7 @@ function _MOUSEMOVE(event) {
 
     // BIND CIRCLE IF nearNode and GROUP ALL SAME XY SEG POINTS
     if (wallNode = editor.nearWallNode(snap, 20)) {
-      if (typeof (binder) == 'undefined' || binder.type == 'segment') {
+      if (!binder || binder.type == 'segment') {
         binder = qSVG.create('boxbind', 'circle', {
           id: "circlebinder",
           class: "circle_css_2",
@@ -482,9 +490,9 @@ function _MOUSEMOVE(event) {
       }
       cursor('move');
     } else {
-      if (typeof (binder) != "undefined" && binder.type == 'node') {
+      if (binder && binder.type == 'node') {
         binder.remove();
-        delete binder;
+        binder = null;
         hideAllSize();
         cursor('default');
         rib();
@@ -495,7 +503,7 @@ function _MOUSEMOVE(event) {
     // BIND WALL WITH NEARPOINT function ---> WALL BINDER CREATION
     if (wallBind = editor.rayCastingWalls(snap, WALLS)) {
       if (wallBind.length > 1) wallBind = wallBind[wallBind.length - 1];
-      if (wallBind && typeof (binder) == 'undefined') {
+      if (wallBind && !binder) {
         var objWall = editor.objFromWall(wallBind);
         if (objWall.length > 0) editor.inWallRib2(wallBind);
         binder = {};
@@ -526,7 +534,7 @@ function _MOUSEMOVE(event) {
       }
     } else {
       if (wallBind = editor.nearWall(snap, 6)) {
-        if (wallBind && typeof (binder) == 'undefined') {
+        if (wallBind && !binder) {
           wallBind = wallBind.wall;
           var objWall = editor.objFromWall(wallBind);
           if (objWall.length > 0) editor.inWallRib2(wallBind);
@@ -558,9 +566,9 @@ function _MOUSEMOVE(event) {
         }
       }
       else {
-        if (typeof (binder) != "undefined" && binder.type == 'segment') {
+        if (binder && binder.type == 'segment') {
           binder.graph.remove();
-          delete binder;
+          binder = null;
           hideAllSize();
           cursor('default');
           rib();
@@ -589,7 +597,7 @@ function _MOUSEMOVE(event) {
       pox = wallNode.x;
       poy = wallNode.y;
       cursor('grab');
-      if (typeof (binder) == 'undefined') {
+      if (!binder) {
         binder = qSVG.create('boxbind', 'circle', {
           id: "circlebinder",
           class: "circle_css_2",
@@ -601,10 +609,10 @@ function _MOUSEMOVE(event) {
       intersectionOff();
     } else {
       if (!helpConstruc) cursor('crosshair');
-      if (typeof (binder) != "undefined") {
+      if (binder) {
         if (binder.graph) binder.graph.remove();
         else binder.remove();
-        delete binder;
+        binder = null;
       }
     }
   }
@@ -708,9 +716,9 @@ function _MOUSEMOVE(event) {
             cursor('grab');
           }
         } else {
-          if (typeof (binder) != "undefined") {
+          if (binder) {
             binder.remove();
-            delete binder;
+            binder = null;
           }
           if (wallEndConstruc === false) cursor('crosshair');
         }
@@ -720,7 +728,7 @@ function _MOUSEMOVE(event) {
         var coeff = fltt.deg / flt; // -45 -> -1     45 -> 1
         var phi = poy - (coeff * pox);
         var Xdiag = (y - phi) / coeff;
-        if (typeof (binder) == 'undefined') {
+        if (!binder) {
           // HELP FOR H LINE
           var found = false;
           if (flt < 15 && Math.abs(poy - y) < 25) {
@@ -865,7 +873,7 @@ function _MOUSEMOVE(event) {
         }
         else {
           objTarget.graph.remove();
-          delete objTarget;
+          objTarget = null;
           OBJDATA.splice(wall.indexObj, 1);
           wallListObj.splice(k, 1);
         }
@@ -999,7 +1007,7 @@ function _MOUSEMOVE(event) {
           var limits = limitObj(eq, objTarget.size, objTarget);
           if (!qSVG.btwn(limits[0].x, WALLS[k].start.x, WALLS[k].end.x) || !qSVG.btwn(limits[0].y, WALLS[k].start.y, WALLS[k].end.y) || !qSVG.btwn(limits[1].x, WALLS[k].start.x, WALLS[k].end.x) || !qSVG.btwn(limits[1].y, WALLS[k].start.y, WALLS[k].end.y)) {
             objTarget.graph.remove();
-            delete objTarget;
+            objTarget = null;
             var indexObj = OBJDATA.indexOf(objTarget);
             OBJDATA.splice(indexObj, 1);
           }
@@ -1391,9 +1399,9 @@ function _MOUSEUP(event) {
   drag = 'off';
   cursor('default');
   if (mode == 'select_mode') {
-    if (typeof (binder) != 'undefined') {
+    if (binder) {
       binder.remove();
-      delete binder;
+      binder = null;
       save();
     }
   }
@@ -1412,6 +1420,138 @@ function _MOUSEUP(event) {
   }
 
   //**************************************************************************
+  //********************   IMAGE   MODE **************************************
+  //**************************************************************************
+  if (mode == 'image_mode') {
+    if (action == 0) {
+      snap = calcul_snap(event, grid_snap);
+      // Place l'image à la position du clic
+      if (typeof(pendingImage) != 'undefined') {
+        // Créer un objet image avec toutes les propriétés nécessaires
+        var imageObj = {};
+        imageObj.x = snap.x;
+        imageObj.y = snap.y;
+        imageObj.angle = 0;
+        imageObj.size = pendingImage.width;
+        imageObj.thick = pendingImage.height;
+        imageObj.originalWidth = pendingImage.width;
+        imageObj.originalHeight = pendingImage.height;
+        imageObj.opacity = 0.5;
+        imageObj.class = 'image';
+        imageObj.type = 'image';
+        imageObj.src = pendingImage.src;
+        
+        // Créer le groupe SVG pour l'image
+        imageObj.graph = qSVG.create('none', 'g', {});
+        
+        // Créer l'élément image SVG
+        var imageElement = qSVG.create('none', 'image', {
+          x: -pendingImage.width / 2,
+          y: -pendingImage.height / 2,
+          width: pendingImage.width,
+          height: pendingImage.height,
+          opacity: 0.5
+        });
+        imageElement.attr('href', pendingImage.src);
+        imageElement.attr('class', 'placedImage');
+        imageObj.imageElement = imageElement;
+        imageObj.graph.append(imageElement);
+        
+        // Définir la bbox
+        imageObj.bbox = {
+          x: snap.x - (pendingImage.width / 2),
+          y: snap.y - (pendingImage.height / 2),
+          width: pendingImage.width,
+          height: pendingImage.height,
+          left: snap.x - (pendingImage.width / 2),
+          right: snap.x + (pendingImage.width / 2),
+          top: snap.y - (pendingImage.height / 2),
+          bottom: snap.y + (pendingImage.height / 2),
+          origin: { x: snap.x, y: snap.y }
+        };
+        
+        // Définir realBbox pour la détection de clic
+        imageObj.realBbox = [
+          { x: imageObj.bbox.left, y: imageObj.bbox.top },
+          { x: imageObj.bbox.right, y: imageObj.bbox.top },
+          { x: imageObj.bbox.right, y: imageObj.bbox.bottom },
+          { x: imageObj.bbox.left, y: imageObj.bbox.bottom }
+        ];
+        
+        // Définir les paramètres de l'objet
+        imageObj.params = {
+          bindBox: true,
+          move: true,
+          resize: true,
+          rotate: true,
+          resizeLimit: {
+            width: { min: 50, max: 1000 },
+            height: { min: 50, max: 1000 }
+          }
+        };
+        
+        // Fonction update pour mettre à jour la position
+        imageObj.update = function() {
+          this.graph.attr('transform', 'translate(' + this.x + ',' + this.y + ') rotate(' + this.angle + ')');
+          
+          // Mettre à jour bbox
+          this.bbox.x = this.x - (this.size / 2);
+          this.bbox.y = this.y - (this.thick / 2);
+          this.bbox.left = this.bbox.x;
+          this.bbox.right = this.bbox.x + this.size;
+          this.bbox.top = this.bbox.y;
+          this.bbox.bottom = this.bbox.y + this.thick;
+          this.bbox.origin = { x: this.x, y: this.y };
+          this.bbox.width = this.size;
+          this.bbox.height = this.thick;
+          
+          // Mettre à jour realBbox avec rotation
+          var angleRadian = this.angle * (Math.PI / 180);
+          var halfWidth = this.size / 2;
+          var halfHeight = this.thick / 2;
+          
+          this.realBbox = [
+            { 
+              x: (-halfWidth * Math.cos(angleRadian) - (-halfHeight) * Math.sin(angleRadian)) + this.x,
+              y: (-halfWidth * Math.sin(angleRadian) + (-halfHeight) * Math.cos(angleRadian)) + this.y
+            },
+            { 
+              x: (halfWidth * Math.cos(angleRadian) - (-halfHeight) * Math.sin(angleRadian)) + this.x,
+              y: (halfWidth * Math.sin(angleRadian) + (-halfHeight) * Math.cos(angleRadian)) + this.y
+            },
+            { 
+              x: (halfWidth * Math.cos(angleRadian) - halfHeight * Math.sin(angleRadian)) + this.x,
+              y: (halfWidth * Math.sin(angleRadian) + halfHeight * Math.cos(angleRadian)) + this.y
+            },
+            { 
+              x: (-halfWidth * Math.cos(angleRadian) - halfHeight * Math.sin(angleRadian)) + this.x,
+              y: (-halfWidth * Math.sin(angleRadian) + halfHeight * Math.cos(angleRadian)) + this.y
+            }
+          ];
+          
+          // Mettre à jour la taille de l'image dans le SVG
+          this.imageElement.attr('width', this.size);
+          this.imageElement.attr('height', this.thick);
+          this.imageElement.attr('x', -this.size / 2);
+          this.imageElement.attr('y', -this.thick / 2);
+        };
+        
+        // Initialiser la position
+        imageObj.update();
+        
+        // Ajouter au DOM et à OBJDATA
+        $('#boxFurniture').append(imageObj.graph);
+        OBJDATA.push(imageObj);
+        
+        $('#boxinfo').html('Image placed - Click to select and move');
+        pendingImage = null;
+        fonc_button('select_mode');
+        save();
+      }
+    }
+  }
+
+  //**************************************************************************
   //**************        OBJECT   MODE **************************************
   //**************************************************************************
   if (mode == 'object_mode') {
@@ -1421,7 +1561,7 @@ function _MOUSEUP(event) {
     if (OBJDATA[OBJDATA.length - 1].class == 'energy') targetBox = 'boxEnergy';
     if (OBJDATA[OBJDATA.length - 1].class == 'furniture') targetBox = 'boxFurniture';
     $('#' + targetBox).append(OBJDATA[OBJDATA.length - 1].graph);
-    delete binder;
+    binder = null;
     $('#boxinfo').html('Object added');
     fonc_button('select_mode');
     save();
@@ -1448,10 +1588,10 @@ function _MOUSEUP(event) {
       OBJDATA.push(binder);
       binder.graph.remove();
       $('#boxcarpentry').append(OBJDATA[OBJDATA.length - 1].graph);
-      delete binder;
-      delete labelMeasure;
+      binder = null;
+      labelMeasure = null;
       cross.remove();
-      delete cross;
+      cross = null;
       $('#boxinfo').html('Measure added');
       fonc_button('select_mode');
       save();
@@ -1506,7 +1646,7 @@ function _MOUSEUP(event) {
       WALLS.push(newWall);
       binder.data.wall.end = { x: binder.data.x, y: binder.data.y };
       binder.remove();
-      delete binder;
+      binder = null;
       editor.architect(WALLS);
       save();
     }
@@ -1526,7 +1666,7 @@ function _MOUSEUP(event) {
     OBJDATA.push(binder);
     binder.graph.remove();
     $('#boxcarpentry').append(OBJDATA[OBJDATA.length - 1].graph);
-    delete binder;
+    binder = null;
     $('#boxinfo').html('Element added');
     fonc_button('select_mode');
     save();
@@ -1558,10 +1698,10 @@ function _MOUSEUP(event) {
         { x: pox, y: poy }, { x: x, y: y }) / 60).toFixed(2) + ' m</span>');
       $('#line_construc').remove(); // DEL LINE CONSTRUC HELP TO VIEW NEW SEG PATH
       lengthTemp.remove();
-      delete lengthTemp;
+      lengthTemp = null;
       construc = 0;
       if (wallEndConstruc) action = 0;
-      delete wallEndConstruc;
+      wallEndConstruc = null;
       pox = x;
       poy = y;
       save();
@@ -1573,7 +1713,7 @@ function _MOUSEUP(event) {
       fonc_button('select_mode');
       if (typeof (binder) != 'undefined') {
         binder.remove();
-        delete binder;
+        binder = null;
       }
       snap = calcul_snap(event, grid_snap);
       pox = snap.x;
@@ -1630,10 +1770,10 @@ function _MOUSEUP(event) {
           document.getElementById("wallWidthVal").textContent = binder.wall.thick;
           mode = 'edit_wall_mode';
         }
-        delete equation1;
-        delete equation2;
-        delete equation3;
-        delete intersectionFollowers;
+        equation1 = null;
+        equation2 = null;
+        equation3 = null;
+        intersectionFollowers = null;
       }
 
       if (binder.type == 'obj') {
@@ -1656,7 +1796,7 @@ function _MOUSEUP(event) {
           mode = "select_mode";
           action = 0;
           binder.graph.remove();
-          delete binder;
+          binder = null;
         }
       }
 
@@ -1691,10 +1831,39 @@ function _MOUSEUP(event) {
             document.getElementById("bboxStepsVal").textContent = objTarget.value;
             $('#stepsCounter').show();
           }
-          document.getElementById("bboxWidth").value = objTarget.width * 100;
-          document.getElementById("bboxWidthVal").textContent = objTarget.width * 100;
-          document.getElementById("bboxHeight").value = objTarget.height * 100;
-          document.getElementById("bboxHeightVal").textContent = objTarget.height * 100;
+          
+          // Handle image-specific controls
+          if (objTarget.class === 'image') {
+            // Show image controls, hide standard scale controls
+            $('#imageScaleControl').show();
+            $('#objBoundingBoxScale').hide();
+            
+            // Calculate current scale percentage
+            let currentScale = 100;
+            if (objTarget.originalWidth && objTarget.originalWidth > 0) {
+              currentScale = Math.round((objTarget.size / objTarget.originalWidth) * 100);
+            }
+            
+            // Set image scale slider and display
+            document.getElementById("imageScale").value = currentScale;
+            document.getElementById("imageScaleVal").textContent = currentScale;
+            
+            // Set image opacity slider and display
+            let currentOpacity = Math.round((objTarget.opacity || 0.5) * 100);
+            document.getElementById("imageOpacity").value = currentOpacity;
+            document.getElementById("imageOpacityVal").textContent = currentOpacity;
+          } else {
+            // Show standard controls, hide image controls
+            $('#imageScaleControl').hide();
+            $('#objBoundingBoxScale').show();
+            
+            // Set standard width/height controls
+            document.getElementById("bboxWidth").value = objTarget.width * 100;
+            document.getElementById("bboxWidthVal").textContent = objTarget.width * 100;
+            document.getElementById("bboxHeight").value = objTarget.height * 100;
+            document.getElementById("bboxHeightVal").textContent = objTarget.height * 100;
+          }
+          
           document.getElementById("bboxRotation").value = objTarget.angle;
           document.getElementById("bboxRotationVal").textContent = objTarget.angle;
           mode = 'edit_boundingBox_mode';
@@ -1703,13 +1872,13 @@ function _MOUSEUP(event) {
           mode = "select_mode";
           action = 0;
           binder.graph.remove();
-          delete binder;
+          binder = null;
         }
       }
 
       if (mode == 'bind_mode') {
         binder.remove();
-        delete binder;
+        binder = null;
       }
     } // END BIND IS DEFINED
     save();
