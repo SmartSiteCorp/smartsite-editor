@@ -67,7 +67,7 @@ function init3DView() {
     }
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x111827);
+    scene.background = new THREE.Color(0xf4eee3);
 
     const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
     camera.position.set(8, 8, 8);
@@ -99,18 +99,18 @@ function init3DView() {
     controls.maxDistance = 200;
     controls.maxPolarAngle = Math.PI / 2.05;
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x111111, 0.95);
+    const hemiLight = new THREE.HemisphereLight(0xfffbf2, 0xd8ccb8, 1.05);
     hemiLight.position.set(0, 20, 0);
     scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const dirLight = new THREE.DirectionalLight(0xfff4de, 0.9);
     dirLight.position.set(16, 24, 10);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
 
-    const grid = new THREE.GridHelper(120, 120, 0x64748b, 0x334155);
+    const grid = new THREE.GridHelper(120, 120, 0xd6c8af, 0xe5dac7);
     grid.position.y = 0;
     scene.add(grid);
 
@@ -157,9 +157,9 @@ function build3DPlan() {
     clear3DPlan();
     threeDState.planGroup.position.set(0, 0, 0);
 
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xbfc7d5, roughness: 0.72, metalness: 0.05 });
-    const topMaterial = new THREE.MeshStandardMaterial({ color: 0xe6ebf4, roughness: 0.84, metalness: 0.02 });
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xd4b98f, roughness: 0.95, metalness: 0 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf6f1e8, roughness: 0.8, metalness: 0.02 });
+    const topMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdf8, roughness: 0.88, metalness: 0.01 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xe2cfb1, roughness: 0.92, metalness: 0 });
 
     for (let i = 0; i < WALLS.length; i++) {
         const wall = WALLS[i];
