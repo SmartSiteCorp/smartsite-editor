@@ -632,7 +632,7 @@ document.getElementById("bboxTrash").addEventListener("click", function () {
     $('#panel').show(200);
     fonc_button('select_mode');
     $('#boxinfo').html('Deleted object');
-    delete binder;
+    binder = null;
     rib();
 });
 
@@ -765,16 +765,43 @@ $('#textToLayer').on('hidden.bs.modal', function (e) {
     action = 0;
     let textToMake = document.getElementById('labelBox').textContent;
     if (textToMake != "" && textToMake != "Your text") {
-        binder = new editor.obj2D("free", "text", document.getElementById('labelBox').style.color, snap, 0, 0, 0, "normal", 0, {
+        // Récupérer la couleur avec getComputedStyle pour s'assurer qu'elle est définie
+        const labelBox = document.getElementById('labelBox');
+        let textColor = window.getComputedStyle(labelBox).color;
+        
+        // Convertir RGB en hex si nécessaire
+        if (textColor.startsWith('rgb')) {
+            const rgbMatch = textColor.match(/\d+/g);
+            if (rgbMatch && rgbMatch.length >= 3) {
+                const hex = [
+                    parseInt(rgbMatch[0]).toString(16).padStart(2, '0'),
+                    parseInt(rgbMatch[1]).toString(16).padStart(2, '0'),
+                    parseInt(rgbMatch[2]).toString(16).padStart(2, '0')
+                ].join('');
+                textColor = '#' + hex;
+            }
+        }
+        
+        // Fallback à la couleur par défaut si vide
+        if (!textColor || textColor === '' || textColor.includes('rgba(0, 0, 0, 0)')) {
+            textColor = '#333333';
+        }
+        
+        binder = new editor.obj2D("free", "text", textColor, snap, 0, 0, 0, "normal", 0, {
             text: textToMake,
             size: document.getElementById('sizePolice').value
         });
-        binder.update();
+            // Ajouter le graph au DOM AVANT le premier update() pour que le bbox soit calculé correctement
         OBJDATA.push(binder);
-        binder.graph.remove();
         $('#boxText').append(OBJDATA[OBJDATA.length - 1].graph);
+        
+            // Maintenant appeler update() avec le graph dans le DOM
+            binder.update();
         OBJDATA[OBJDATA.length - 1].update();
-        delete binder;
+        
+            // Passer à autre chose
+            var textObj = OBJDATA[OBJDATA.length - 1];
+        binder = null;
         $('#boxinfo').html('Added text');
         save();
     } else {
@@ -903,7 +930,7 @@ document.getElementById("applySurface").addEventListener("click", function () {
     $('#roomTools').hide(100);
     $('#panel').show(200);
     binder.remove();
-    delete binder;
+    binder = null;
     let id = $('#roomIndex').val();
     //COLOR
     let data = $('#roomBackground').val();
@@ -940,7 +967,7 @@ document.getElementById("resetRoomTools").addEventListener("click", function () 
     $('#roomTools').hide(100);
     $('#panel').show(200);
     binder.remove();
-    delete binder;
+    binder = null;
     $('#boxinfo').html('Updated room');
     fonc_button('select_mode');
 
@@ -967,7 +994,17 @@ document.getElementById("wallTrash").addEventListener("click", function () {
 let textEditorColorBtn = document.querySelectorAll('.textEditorColor');
 for (let k = 0; k < textEditorColorBtn.length; k++) {
     textEditorColorBtn[k].addEventListener('click', function () {
-        document.getElementById('labelBox').style.color = this.style.color;
+        // Récupérer la couleur du style inline (color:...)
+        const styleAttr = this.getAttribute('style');
+        const colorMatch = styleAttr.match(/color:\s*([^;]+)/);
+        if (colorMatch) {
+            const color = colorMatch[1].trim();
+            document.getElementById('labelBox').style.color = color;
+        } else {
+            // Sinon, utiliser getComputedStyle
+            const computedColor = window.getComputedStyle(this).color;
+            document.getElementById('labelBox').style.color = computedColor;
+        }
     });
 }
 
@@ -999,7 +1036,7 @@ for (let k = 0; k < objTrashBtn.length; k++) {
         $('#boxinfo').html('Selection mode');
         $('#panel').show('200');
         binder.graph.remove();
-        delete binder;
+        binder = null;
         rib();
         $('#panel').show('300');
     });
@@ -1696,7 +1733,7 @@ $('#select_mode').click(function () {
     $('#boxinfo').html('Mode "select"');
     if (typeof (binder) != 'undefined') {
         binder.remove();
-        delete binder;
+        binder = null;
     }
 
     fonc_button('select_mode');
