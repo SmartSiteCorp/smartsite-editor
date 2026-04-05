@@ -40,6 +40,249 @@ let originY_viewbox = 0;
 let zoom = 9;
 let factor = 1;
 
+const WALL_HEIGHT_3D = 2.7;
+let threeDState = {
+    active: false,
+    initialized: false,
+    scene: null,
+    camera: null,
+    renderer: null,
+    controls: null,
+    planGroup: null,
+    container: null,
+    rafId: null
+};
+
+function init3DView() {
+    if (threeDState.initialized) {
+        return true;
+    }
+    if (typeof THREE === 'undefined') {
+        return false;
+    }
+
+    const container = document.getElementById('view3DContainer');
+    if (!container) {
+        return false;
+    }
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x111827);
+
+    const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
+    camera.position.set(8, 8, 8);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    container.appendChild(renderer.domElement);
+
+    const OrbitControlsCtor =
+        (typeof THREE !== 'undefined' && typeof THREE.OrbitControls === 'function')
+            ? THREE.OrbitControls
+            : (typeof OrbitControls === 'function')
+                ? OrbitControls
+                : (typeof window !== 'undefined' && window.THREE && typeof window.THREE.OrbitControls === 'function')
+                    ? window.THREE.OrbitControls
+                    : null;
+
+    if (!OrbitControlsCtor) {
+        $('#boxinfo').html('3D indisponible (OrbitControls non charge)');
+        return false;
+    }
+
+    const controls = new OrbitControlsCtor(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.minDistance = 2;
+    controls.maxDistance = 200;
+    controls.maxPolarAngle = Math.PI / 2.05;
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x111111, 0.95);
+    hemiLight.position.set(0, 20, 0);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(16, 24, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    scene.add(dirLight);
+
+    const grid = new THREE.GridHelper(120, 120, 0x64748b, 0x334155);
+    grid.position.y = 0;
+    scene.add(grid);
+
+    const planGroup = new THREE.Group();
+    scene.add(planGroup);
+
+    threeDState.container = container;
+    threeDState.scene = scene;
+    threeDState.camera = camera;
+    threeDState.renderer = renderer;
+    threeDState.controls = controls;
+    threeDState.planGroup = planGroup;
+    threeDState.initialized = true;
+
+    resize3DView();
+    window.addEventListener('resize', resize3DView);
+    return true;
+}
+
+function disposeMaterial(material) {
+    if (!material) return;
+    if (Array.isArray(material)) {
+        for (let i = 0; i < material.length; i++) {
+            disposeMaterial(material[i]);
+        }
+        return;
+    }
+    material.dispose();
+}
+
+function clear3DPlan() {
+    if (!threeDState.planGroup) return;
+    while (threeDState.planGroup.children.length > 0) {
+        const child = threeDState.planGroup.children[0];
+        threeDState.planGroup.remove(child);
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) disposeMaterial(child.material);
+    }
+}
+
+function build3DPlan() {
+    if (!threeDState.initialized) return;
+
+    clear3DPlan();
+
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xbfc7d5, roughness: 0.72, metalness: 0.05 });
+    const topMaterial = new THREE.MeshStandardMaterial({ color: 0xe6ebf4, roughness: 0.84, metalness: 0.02 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xd4b98f, roughness: 0.95, metalness: 0 });
+
+    for (let i = 0; i < WALLS.length; i++) {
+        const wall = WALLS[i];
+        if (!wall || !wall.start || !wall.end) continue;
+
+        const dx = wall.end.x - wall.start.x;
+        const dy = wall.end.y - wall.start.y;
+        const wallLength = Math.sqrt((dx * dx) + (dy * dy)) / meter;
+        if (wallLength <= 0.01) continue;
+
+        const wallThickness = Math.max((wall.thick || wallSize || 20) / meter, 0.08);
+        const wallGeometry = new THREE.BoxGeometry(wallLength, WALL_HEIGHT_3D, wallThickness);
+        const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial.clone());
+        wallMesh.castShadow = true;
+        wallMesh.receiveShadow = true;
+        wallMesh.position.set(
+            ((wall.start.x + wall.end.x) / 2) / meter,
+            WALL_HEIGHT_3D / 2,
+            -((wall.start.y + wall.end.y) / 2) / meter
+        );
+        wallMesh.rotation.y = -Math.atan2(dy, dx);
+        threeDState.planGroup.add(wallMesh);
+    }
+
+    for (let i = 0; i < ROOM.length; i++) {
+        const room = ROOM[i];
+        if (!room || !room.coords || room.coords.length < 4) continue;
+
+        const shape = new THREE.Shape();
+        for (let p = 0; p < room.coords.length; p++) {
+            const point = room.coords[p];
+            const px = point.x / meter;
+            const py = point.y / meter;
+            if (p === 0) shape.moveTo(px, py);
+            else shape.lineTo(px, py);
+        }
+
+        const floorGeometry = new THREE.ShapeGeometry(shape);
+        const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial.clone());
+        floorMesh.rotation.x = -Math.PI / 2;
+        floorMesh.position.y = 0.01;
+        floorMesh.receiveShadow = true;
+        threeDState.planGroup.add(floorMesh);
+    }
+
+    const box = new THREE.Box3().setFromObject(threeDState.planGroup);
+    if (!box.isEmpty()) {
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.z, 5);
+        const distance = maxDim * 1.2;
+
+        threeDState.camera.position.set(center.x + distance, Math.max(size.y + 2, 5), center.z + distance);
+        threeDState.controls.target.set(center.x, 0.5, center.z);
+        threeDState.controls.update();
+
+        const roofGeometry = new THREE.PlaneGeometry(maxDim * 1.5, maxDim * 1.5);
+        const roofMesh = new THREE.Mesh(roofGeometry, topMaterial.clone());
+        roofMesh.rotation.x = Math.PI / 2;
+        roofMesh.position.set(center.x, WALL_HEIGHT_3D + 0.01, center.z);
+        roofMesh.receiveShadow = true;
+        threeDState.planGroup.add(roofMesh);
+    }
+}
+
+function resize3DView() {
+    if (!threeDState.initialized || !threeDState.container) return;
+    const width = threeDState.container.clientWidth || window.innerWidth;
+    const height = threeDState.container.clientHeight || window.innerHeight;
+    threeDState.camera.aspect = width / height;
+    threeDState.camera.updateProjectionMatrix();
+    threeDState.renderer.setSize(width, height);
+}
+
+function render3DLoop() {
+    if (!threeDState.active) {
+        threeDState.rafId = null;
+        return;
+    }
+    threeDState.controls.update();
+    threeDState.renderer.render(threeDState.scene, threeDState.camera);
+    threeDState.rafId = requestAnimationFrame(render3DLoop);
+}
+
+function refresh3DView() {
+    if (!threeDState.active) return;
+    build3DPlan();
+}
+
+function toggle3DView() {
+    if (!init3DView()) {
+        $('#boxinfo').html('3D indisponible (Three.js non charge)');
+        return;
+    }
+
+    const button = document.getElementById('toggle3dView');
+    threeDState.active = !threeDState.active;
+
+    if (threeDState.active) {
+        document.body.classList.add('view3d-active');
+        threeDState.container.style.display = 'block';
+        threeDState.container.setAttribute('aria-hidden', 'false');
+        resize3DView();
+        build3DPlan();
+        if (!threeDState.rafId) {
+            render3DLoop();
+        }
+        if (button) button.textContent = 'Vue 2D';
+        $('#boxinfo').html('Vue 3D active');
+    } else {
+        document.body.classList.remove('view3d-active');
+        threeDState.container.style.display = 'none';
+        threeDState.container.setAttribute('aria-hidden', 'true');
+        if (button) button.textContent = 'Vue 3D';
+        $('#boxinfo').html('Retour en vue 2D');
+    }
+}
+
+function init3DToggleButton() {
+    const button = document.getElementById('toggle3dView');
+    if (!button) return;
+    button.addEventListener('click', toggle3DView);
+}
+
 // **************************************************************************
 // *****************   LOAD / SAVE LOCALSTORAGE      ************************
 // **************************************************************************
@@ -304,6 +547,7 @@ function save(boot = false) {
             WALLS[k].parent = WALLS[WALLS[k].parent];
         }
     }
+    refresh3DView();
     return true;
 }
 
@@ -342,6 +586,7 @@ function load(index = HISTORY.index, boot = false) {
     editor.architect(WALLS);
     editor.showScaleBox();
     rib();
+    refresh3DView();
 }
 
 $('svg').each(function () {
@@ -744,6 +989,7 @@ document.getElementById("objToolsHinge").addEventListener("click", function () {
 });
 
 window.addEventListener("load", function () {
+    init3DToggleButton();
     document.getElementById('panel').style.transform = "translateX(200px)";
     document.getElementById('panel').addEventListener("transitionend", function () {
         document.getElementById('moveBox').style.transform = "translateX(-165px)";

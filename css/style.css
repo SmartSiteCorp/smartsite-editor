@@ -87,6 +87,37 @@
         }
     }
     body {font-family: 'Roboto', sans-serif;overflow:hidden}
+
+    #view3DContainer {
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      display: none;
+      background: radial-gradient(circle at 20% 20%, #2f3d52 0%, #1f2838 45%, #111827 100%);
+    }
+
+    #toggle3dView {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      min-width: 130px;
+    }
+
+    body.view3d-active #lin {
+      display: none;
+    }
+
+    body.view3d-active #boxinfo {
+      z-index: 6;
+      color: #e5e7eb;
+    }
+
+    body.view3d-active #moveBox,
+    body.view3d-active #zoomBox {
+      display: none;
+    }
     input[type=range] {
       -webkit-appearance: none;
       margin: 18px 0;
