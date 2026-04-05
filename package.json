@@ -1,0 +1,25 @@
+{
+  "name": "homerougheditor",
+  "version": "1.0.0",
+  "description": "**SmartSite Editor** est un éditeur de plans d'intérieur en ligne, libre et gratuit, permettant à tout développeur ou intégrateur de proposer la création de **plans de maison**, **d'appartement** ou de tout autre espace, directement dans le navigateur.",
+  "main": "editor.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SmartSiteCorp/smartsite-editor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SmartSiteCorp/smartsite-editor/issues"
+  },
+  "homepage": "https://github.com/SmartSiteCorp/smartsite-editor#readme",
+  "devDependencies": {
+    "vite": "^8.0.3"
+  }
+}
