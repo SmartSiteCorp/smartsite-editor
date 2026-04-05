@@ -11,6 +11,8 @@ let magnetic = 0;
 let construc = 0;
 let Rcirclebinder = 8;
 let mode = 'select_mode';
+let binder = null;
+let lengthTemp = null;
 let modeOption;
 let linElement = $('#lin');
 taille_w = linElement.width();
@@ -682,6 +684,33 @@ document.getElementById('bboxRotation').addEventListener("input", function () {
     binder.angle = sliderValue;
     binder.update();
     document.getElementById("bboxRotationVal").textContent = sliderValue;
+});
+
+// Contrôle d'échelle uniforme pour les images
+document.getElementById('imageScale').addEventListener("input", function () {
+    let scalePercent = this.value;
+    let objTarget = binder.obj;
+    if (objTarget.class === 'image' && objTarget.originalWidth && objTarget.originalHeight) {
+        let scaleFactor = scalePercent / 100;
+        objTarget.size = objTarget.originalWidth * scaleFactor;
+        objTarget.thick = objTarget.originalHeight * scaleFactor;
+        objTarget.update();
+        binder.size = objTarget.size;
+        binder.thick = objTarget.thick;
+        binder.update();
+        document.getElementById("imageScaleVal").textContent = scalePercent;
+    }
+});
+
+// Contrôle d'opacité pour les images
+document.getElementById('imageOpacity').addEventListener("input", function () {
+    let opacityPercent = this.value;
+    let objTarget = binder.obj;
+    if (objTarget.class === 'image' && objTarget.imageElement) {
+        objTarget.opacity = opacityPercent / 100;
+        objTarget.imageElement.attr('opacity', objTarget.opacity);
+        document.getElementById("imageOpacityVal").textContent = opacityPercent;
+    }
 });
 
 document.getElementById('doorWindowWidth').addEventListener("input", function () {
@@ -1606,27 +1635,29 @@ document.addEventListener("fullscreenchange", function () {
 
 function raz_button() {
     $('#rect_mode').removeClass('btn-success');
-    $('#rect_mode').addClass('btn-default');
+    $('#rect_mode').addClass('btn-light shadow');
     $('#select_mode').removeClass('btn-success');
-    $('#select_mode').addClass('btn-default');
+    $('#select_mode').addClass('btn-light shadow');
     $('#line_mode').removeClass('btn-success');
-    $('#line_mode').addClass('btn-default');
+    $('#line_mode').addClass('btn-light shadow');
     $('#partition_mode').removeClass('btn-success');
-    $('#partition_mode').addClass('btn-default');
+    $('#partition_mode').addClass('btn-light shadow');
     $('#door_mode').removeClass('btn-success');
-    $('#door_mode').addClass('btn-default');
+    $('#door_mode').addClass('btn-light shadow');
     $('#node_mode').removeClass('btn-success');
-    $('#node_mode').addClass('btn-default');
+    $('#node_mode').addClass('btn-light shadow');
     $('#text_mode').removeClass('btn-success');
-    $('#text_mode').addClass('btn-default');
+    $('#text_mode').addClass('btn-light shadow');
+    $('#image_mode').removeClass('btn-success');
+    $('#image_mode').addClass('btn-light shadow');
     $('#room_mode').removeClass('btn-success');
-    $('#room_mode').addClass('btn-default');
+    $('#room_mode').addClass('btn-light shadow');
     $('#distance_mode').removeClass('btn-success');
-    $('#distance_mode').addClass('btn-default');
+    $('#distance_mode').addClass('btn-light shadow');
     $('#object_mode').removeClass('btn-success');
-    $('#object_mode').addClass('btn-default');
+    $('#object_mode').addClass('btn-light shadow');
     $('#stair_mode').removeClass('btn-success');
-    $('#stair_mode').addClass('btn-default');
+    $('#stair_mode').addClass('btn-light shadow');
 }
 
 function fonc_button(modesetting, option) {
@@ -1635,7 +1666,7 @@ function fonc_button(modesetting, option) {
     $('.sub').hide();
     raz_button();
     if (option != 'simpleStair') {
-        $('#' + modesetting).removeClass('btn-default');
+        $('#' + modesetting).removeClass('btn-light shadow');
         $('#' + modesetting).addClass('btn-success');
 
     }
@@ -1734,6 +1765,46 @@ $('#text_mode').click(function () {
     $('#boxinfo').html('Add text<br/><span style=\"font-size:0.7em\">Place the cursor to the desired location, then ' +
         'type your text.</span>');
     fonc_button('text_mode');
+});
+
+$('#image_mode').click(function () {
+    $('#boxinfo').html('Add image<br/><span style=\"font-size:0.7em\">Select an image from your computer.</span>');
+    $('#imageFileInput').trigger('click');
+});
+
+// Gestionnaire pour le chargement de l'image
+$('#imageFileInput').on('change', function(event) {
+    var file = event.target.files[0];
+    if (file && file.type.match('image.*')) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                // Calcul de la taille de l'image pour qu'elle ne soit pas trop grande (max 300px de largeur)
+                var maxWidth = 300;
+                var width = img.width;
+                var height = img.height;
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+                
+                pendingImage = {
+                    src: e.target.result,
+                    width: width,
+                    height: height
+                };
+                
+                mode = 'image_mode';
+                fonc_button('image_mode');
+                $('#boxinfo').html('Click to place the image<br/><span style=\"font-size:0.7em\">The image will be placed with 50% transparency.</span>');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    // Reset l'input pour permettre de sélectionner la même image à nouveau
+    $(this).val('');
 });
 
 $('#grid_mode').click(function () {
