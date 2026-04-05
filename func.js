@@ -160,6 +160,8 @@ function build3DPlan() {
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf6f1e8, roughness: 0.8, metalness: 0.02 });
     const topMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdf8, roughness: 0.88, metalness: 0.01 });
     const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xe2cfb1, roughness: 0.92, metalness: 0 });
+    const doorMaterial = new THREE.MeshStandardMaterial({ color: 0xcaa27c, roughness: 0.65, metalness: 0.04 });
+    const handleMaterial = new THREE.MeshStandardMaterial({ color: 0x3d3d3d, roughness: 0.3, metalness: 0.6 });
 
     for (let i = 0; i < WALLS.length; i++) {
         const wall = WALLS[i];
@@ -203,6 +205,69 @@ function build3DPlan() {
         floorMesh.position.y = 0.01;
         floorMesh.receiveShadow = true;
         threeDState.planGroup.add(floorMesh);
+    }
+
+    for (let i = 0; i < OBJDATA.length; i++) {
+        const obj = OBJDATA[i];
+        if (!obj || obj.class !== 'doorWindow') continue;
+
+        const supportedTypes = ['simple', 'double', 'twin', 'flap', 'pocket', 'aperture', 'fix', 'bay'];
+        if (supportedTypes.indexOf(obj.type) === -1) continue;
+
+        const doorGroup = new THREE.Group();
+        const doorWidth = Math.max((Number(obj.size) || 0) / meter, 0.4);
+        const wallThickness = Math.max((Number(obj.thick) || wallSize || 20) / meter, 0.08);
+        const leafDepth = wallThickness;
+        const doorHeight = Math.max(Math.min(WALL_HEIGHT_3D - 0.08, 2.15), 1.8);
+        const hingeSign = obj.hinge === 'reverse' ? -1 : 1;
+        const handleHeight = Math.min(Math.max(doorHeight * 0.52, 0.9), 1.1);
+
+        const addHandle = (baseX, extensionSign) => {
+            const faceOffsets = [1, -1];
+            for (let f = 0; f < faceOffsets.length; f++) {
+                const faceSign = faceOffsets[f];
+                const plate = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.12, 0.008), handleMaterial.clone());
+                plate.position.set(baseX, handleHeight, faceSign * (leafDepth / 2 + 0.006));
+                plate.castShadow = true;
+                doorGroup.add(plate);
+
+                const bar = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.012, 0.012), handleMaterial.clone());
+                bar.position.set(baseX + (0.035 * extensionSign), handleHeight, faceSign * (leafDepth / 2 + 0.013));
+                bar.castShadow = true;
+                doorGroup.add(bar);
+            }
+        };
+
+        if (obj.type === 'double' || obj.type === 'twin') {
+            const leafWidth = Math.max((doorWidth / 2) - 0.02, 0.2);
+            const sideSigns = [-1, 1];
+            for (let s = 0; s < sideSigns.length; s++) {
+                const side = sideSigns[s];
+                const leaf = new THREE.Mesh(new THREE.BoxGeometry(leafWidth, doorHeight, leafDepth), doorMaterial.clone());
+                leaf.position.set(side * (leafWidth / 2), doorHeight / 2, 0);
+                leaf.castShadow = true;
+                leaf.receiveShadow = true;
+                doorGroup.add(leaf);
+
+                const handleBaseX = side * (leafWidth / 2 - 0.07);
+                const handleDir = side === -1 ? 1 : -1;
+                addHandle(handleBaseX, handleDir);
+            }
+        } else {
+            const leafWidth = Math.max(doorWidth - 0.02, 0.3);
+            const leaf = new THREE.Mesh(new THREE.BoxGeometry(leafWidth, doorHeight, leafDepth), doorMaterial.clone());
+            leaf.position.set(0, doorHeight / 2, 0);
+            leaf.castShadow = true;
+            leaf.receiveShadow = true;
+            doorGroup.add(leaf);
+
+            const handleBaseX = hingeSign * Math.max(leafWidth * 0.25, 0.09);
+            addHandle(handleBaseX, hingeSign);
+        }
+
+        doorGroup.position.set((obj.x || 0) / meter, 0, -((obj.y || 0) / meter));
+        doorGroup.rotation.y = -THREE.MathUtils.degToRad(obj.angle || 0);
+        threeDState.planGroup.add(doorGroup);
     }
 
     const box = new THREE.Box3().setFromObject(threeDState.planGroup);
@@ -981,6 +1046,7 @@ document.getElementById('doorWindowWidth').addEventListener("input", function ()
         document.getElementById("doorWindowWidthVal").textContent = sliderValue;
     }
     inWallRib(wallBind);
+    refresh3DView();
 });
 
 document.getElementById("objToolsHinge").addEventListener("click", function () {
@@ -990,6 +1056,7 @@ document.getElementById("objToolsHinge").addEventListener("click", function () {
         objTarget.hinge = 'reverse';
     } else objTarget.hinge = 'normal';
     objTarget.update();
+    refresh3DView();
 });
 
 window.addEventListener("load", function () {
