@@ -349,153 +349,204 @@
   </div>
 
   <div id="panel" class="leftBox">
-    <ul class="list-unstyled">
-      <li><button class="btn disabled halfy " id="undo" title="undo"><i class="fa fa-chevron-circle-left"
-            aria-hidden="true"></i>
-          <button class="btn disabled halfy pull-right" id="redo" title="redo"><i class="fa fa-chevron-circle-right"
-              aria-hidden="true"></i></button>
-      </li>
-      <li>
-        <button class="btn btn-light shadow halfy" id="export_project" title="Export project JSON">EXPORT</button>
-        <button class="btn btn-light shadow halfy pull-right" id="import_project" title="Import project JSON">IMPORT</button>
-      </li>
-      <br />
-      <li><button class="btn btn-success fully " id="select_mode" style="box-shadow:2px 2px 3px #ccc;"><i
-            class="fa fa-2x fa-mouse-pointer" aria-hidden="true"></i></button></li>
-      <br />
-      <li>
-        <button class="btn btn-light shadow fully " style="margin-bottom:0px" id="line_mode" data-toggle="tooltip"
-          data-placement="right" title="Make walls">WALL</button>
-        <button class="mt-2 btn btn-light shadow fully " style="margin-bottom:0px" id="partition_mode"
-          data-toggle="tooltip" data-placement="right" title="Make partitions wall">PARTITION</button>
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-success">
-            <input type="checkbox" id="multi" checked />
-            <label for="multi">MULTIPLE</label>
+
+    <!-- Top bar: Undo / Redo / Export / Import -->
+    <div class="panel-topbar">
+      <button class="btn btn-light shadow icon-btn" id="undo" title="Annuler">
+        <i class="fa fa-rotate-left"></i>
+      </button>
+      <button class="btn btn-light shadow icon-btn" id="redo" title="Rétablir">
+        <i class="fa fa-rotate-right"></i>
+      </button>
+      <button class="btn btn-light shadow icon-btn" id="export_project" title="Exporter JSON">
+        <i class="fa fa-file-export"></i>
+      </button>
+      <button class="btn btn-light shadow icon-btn" id="import_project" title="Importer JSON">
+        <i class="fa fa-file-import"></i>
+      </button>
+    </div>
+
+    <!-- Selection -->
+    <button class="btn btn-success icon-card icon-card-row" id="select_mode" style="margin-bottom:8px">
+      <i class="fa fa-arrow-pointer"></i>
+      <span class="ic-label">SÉLECTION</span>
+    </button>
+
+    <hr class="panel-divider" />
+
+    <!-- Construire -->
+    <div class="icon-grid">
+      <button class="btn btn-light shadow icon-card" id="line_mode" title="Tracer des murs">
+        <i class="fa fa-ruler-combined"></i>
+        <span class="ic-label">MUR</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="partition_mode" title="Tracer des cloisons">
+        <i class="fa fa-grip-lines"></i>
+        <span class="ic-label">CLOISON</span>
+      </button>
+      <button class="btn btn-light shadow icon-card icon-card-row" id="room_mode" title="Configurer les pièces" style="grid-column:1/-1">
+        <i class="fa fa-house"></i>
+        <span class="ic-label">CONFIG. PIÈCES</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="node_mode" title="Éditer les nœuds">
+        <i class="fa fa-scissors"></i>
+        <span class="ic-label">NŒUD</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="distance_mode" title="Ajouter une mesure">
+        <i class="fa fa-ruler"></i>
+        <span class="ic-label">MESURE</span>
+      </button>
+    </div>
+    <div class="multi-check">
+      <input type="checkbox" id="multi" checked />
+      <label for="multi" style="cursor:pointer;margin:0">MULTIPLE</label>
+    </div>
+
+    <hr class="panel-divider" />
+
+    <!-- Annoter -->
+    <div class="icon-grid">
+      <button class="btn btn-light shadow icon-card" id="text_mode" title="Ajouter du texte">
+        <i class="fa fa-font"></i>
+        <span class="ic-label">TEXTE</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="image_mode" title="Ajouter une image">
+        <i class="fa fa-image"></i>
+        <span class="ic-label">IMAGE</span>
+      </button>
+    </div>
+
+    <hr class="panel-divider" />
+
+    <!-- Ouvertures & Objets -->
+    <div class="icon-grid">
+      <button class="btn btn-light shadow icon-card" id="door_mode" title="Porte"
+        onclick="$('.sub').hide();$('#door_list').toggle(200);$('#window_list').hide();">
+        <i class="fa fa-door-open"></i>
+        <span class="ic-label">PORTE</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="window_mode" title="Fenêtre"
+        onclick="$('.sub').hide();$('#window_list').toggle(200);$('#door_list').hide()">
+        <i class="fa fa-window-maximize"></i>
+        <span class="ic-label">FENÊTRE</span>
+      </button>
+      <button class="btn btn-light shadow icon-card object" id="stair_mode" title="Escalier"
+        onclick="$('.sub').hide();$('#door_list').hide()">
+        <i class="fa fa-stairs"></i>
+        <span class="ic-label">ESCALIER</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="object_mode" title="Énergie"
+        onclick="$('.sub').hide();$('#energy_list').toggle(200);">
+        <i class="fa fa-bolt"></i>
+        <span class="ic-label">ÉNERGIE</span>
+      </button>
+    </div>
+
+    <hr class="panel-divider" />
+
+    <!-- Outils -->
+    <div class="icon-grid">
+      <button class="btn btn-light shadow icon-card" id="layer_mode" title="Calques"
+        onclick="$('.sub').hide();$('#layer_list').toggle(200);">
+        <i class="fa fa-layer-group"></i>
+        <span class="ic-label">CALQUES</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="report_mode" title="Rapport">
+        <i class="fa fa-calculator"></i>
+        <span class="ic-label">RAPPORT</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" id="full_mode" title="Plein écran"
+        onclick="fullscreen();this.style.display='none';$('#nofull_mode').show();">
+        <i class="fa fa-expand"></i>
+        <span class="ic-label">PLEIN ÉCRAN</span>
+      </button>
+      <button class="btn btn-light shadow icon-card" style="display:none" id="nofull_mode" title="Réduire"
+        onclick="outFullscreen();this.style.display='none';$('#full_mode').show();">
+        <i class="fa fa-compress"></i>
+        <span class="ic-label">RÉDUIRE</span>
+      </button>
+    </div>
+
+    <!-- Sub-panels (positioned absolutely, appear to the right of the panel) -->
+    <div id="door_list" class="list-unstyled sub"
+      style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;width:150px">
+      <button class="btn fully door" id="aperture">Aperture</button>
+      <button class="btn fully door" id="simple">Simple</button>
+      <button class="btn fully door" id="double">Double</button>
+      <button class="btn fully door" id="pocket">Pocket</button>
+    </div>
+
+    <div id="window_list" class="list-unstyled sub"
+      style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;width:150px">
+      <button class="btn fully window" id="fix">Fix</button>
+      <button class="btn fully window" id="flap">Simple</button>
+      <button class="btn fully window" id="twin">Double</button>
+      <button class="btn fully window" id="bay">Slide</button>
+    </div>
+
+    <div id="energy_list" class="list-unstyled sub"
+      style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;bottom:40px;width:600px">
+      <div style="width:600px;float:left;padding:10px">
+        <p>Energy</p>
+        <div style="float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
+          <p>High current</p>
+          <div style="width:120px;float:left;padding:2px">
+            <button class="btn btn-light fully object" id="gtl">Switchboard</button>
+            <button class="btn btn-light fully object" id="switch">Switch</button>
+            <button class="btn btn-light fully object" id="doubleSwitch">Multiways</button>
+            <button class="btn btn-light fully object" id="dimmer">Variator</button>
+          </div>
+          <div style="width:120px;float:left;padding:2px">
+            <button class="btn btn-light fully object" id="plug">Electrical outlet</button>
+            <button class="btn btn-light fully object" id="plug20">Outlet 20A</button>
+            <button class="btn btn-light fully object" id="plug32">Outlet 32A</button>
+            <button class="btn btn-light fully object" id="rooflight shadow">Ceiling lamp</button>
+            <button class="btn btn-light fully object" id="walllight shadow">Wall light</button>
           </div>
         </div>
-      </li>
-      <br />
-      <li><button class="btn btn-light shadow fully " id="room_mode">CONFIG. ROOMS</button></li>
-      <br />
-      <li><button class="btn btn-light shadow fully " id="node_mode"><i class="fa fa-2x fa-scissors"
-            aria-hidden="true"></i></button></li>
-      <br />
-      <li><button class="btn btn-light shadow fully " id="distance_mode" data-toggle="tooltip" data-placement="right"
-          title="Add a measurement">MEASURE</button></li>
-      <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
-          title="Add text">TEXT</button></li>
-      <li><button class="btn btn-light shadow fully " id="image_mode" data-toggle="tooltip" data-placement="right"
-          title="Add image">IMAGE</button></li>
-      <br />
-      <div id="door_list" class="list-unstyled sub"
-        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;width:150px">
-        <button class="btn fully door" id="aperture">Aperture</button>
-        <button class="btn fully door" id="simple">Simple</button>
-        <button class="btn fully door" id="double">Double</button>
-        <button class="btn fully door" id="pocket">Pocket</button>
+        <div style="width:130px;float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
+          <p>Low current</p>
+          <button class="btn btn-light fully object" id="www">Internet access</button>
+          <button class="btn btn-light fully object" id="rj45">RJ45 plug</button>
+          <button class="btn btn-light fully object" id="tv">Antenna plug</button>
+        </div>
+        <div style="width:130px;float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
+          <p>Thermal</p>
+          <button class="btn btn-light fully object" id="boiler">Boiler</button>
+          <button class="btn btn-light fully object" id="heater">Water heater</button>
+          <button class="btn btn-light fully object" id="radiator">Radiator</button>
+        </div>
       </div>
-      <li><button class="btn btn-light shadow fully " id="door_mode"
-          onclick="$('.sub').hide();$('#door_list').toggle(200);$('#window_list').hide();">DOOR</button></li>
+    </div>
 
-      <div id="window_list" class="list-unstyled sub"
-        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;width:150px">
-        <button class="btn fully window" id="fix">Fix</button>
-        <button class="btn fully window" id="flap">Simple</button>
-        <button class="btn fully window" id="twin">Double</button>
-        <button class="btn fully window" id="bay">Slide</button>
-      </div>
-      <li><button class="btn btn-light shadow fully " id="window_mode"
-          onclick="$('.sub').hide();$('#window_list').toggle(200);$('#door_list').hide()">WINDOW</button></li>
-      <li><button class="btn btn-light shadow fully object" id="stair_mode"
-          onclick="$('.sub').hide();$('#door_list').hide()">STAIR</button></li>
-      <br />
-      <div id="energy_list" class="list-unstyled sub"
-        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;bottom:40px;width:600px">
-        <div style="width:600px;float:left;padding:10px">
-          <p>Energy</p>
-          <div style="float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
-            <p>High current</p>
-            <div style="width:120px;float:left;padding:2px">
-              <button class="btn btn-light fully object" id="gtl">Switchboard</button>
-              <button class="btn btn-light fully object" id="switch">Switch</button>
-              <button class="btn btn-light fully object" id="doubleSwitch">Multiways</button>
-              <button class="btn btn-light fully object" id="dimmer">Variator</button>
-
-            </div>
-            <div style="width:120px;float:left;padding:2px">
-              <button class="btn btn-light fully object" id="plug">Electrical outlet</button>
-              <button class="btn btn-light fully object" id="plug20">Outlet 20A</button>
-              <button class="btn btn-light fully object" id="plug32">Outlet 32A</button>
-              <button class="btn btn-light fully object" id="rooflight shadow">Ceiling lamp</button>
-              <button class="btn btn-light fully object" id="walllight shadow">Wall light</button>
-            </div>
-          </div>
-          <div style="width:130px;float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
-            <p>Low current</p>
-            <button class="btn btn-light fully object" id="www">Internet access</button>
-            <button class="btn btn-light fully object" id="rj45">RJ45 plug</button>
-            <button class="btn btn-light fully object" id="tv">Antenna plug</button>
-          </div>
-
-          <div style="width:130px;float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
-            <p>Thermal</p>
-            <button class="btn btn-light fully object" id="boiler">Boiler</button>
-            <button class="btn btn-light fully object" id="heater">Water heater</button>
-            <button class="btn btn-light fully object" id="radiator">Radiator</button>
-          </div>
-        </div>
-
-      </div>
-      <li><button class="btn btn-light shadow fully " id="object_mode"
-          onclick="$('.sub').hide();$('#energy_list').toggle(200);">ENERGY</button></li>
-      <!-- <li><button class="btn btn-light shadow fully " id="object_mode" onclick="$('.sub').hide();$('#object_list').toggle(200);">FURNITURE</button></li> -->
-      <br />
-
-      <li><button class="btn btn-light shadow fully " id="layer_mode"
-          onclick="$('.sub').hide();$('#layer_list').toggle(200);">Layers</button></li>
-
-      <div id="layer_list" class="list-unstyled sub"
-        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;bottom:100px;width:200px">
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showRib" checked />
-            <label for="showRib">Measurement</label>
-          </div>
-        </div>
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showArea" checked />
-            <label for="showArea">Surface</label>
-          </div>
-        </div>
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showLayerRoom" checked />
-            <label for="showLayerRoom">Texture</label>
-          </div>
-        </div>
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showLayerEnergy" checked />
-            <label for="showLayerEnergy">Energy</label>
-          </div>
+    <div id="layer_list" class="list-unstyled sub"
+      style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;bottom:100px;width:200px">
+      <div class="funkyradio" style="font-size:0.8em">
+        <div class="funkyradio-info">
+          <input type="checkbox" id="showRib" checked />
+          <label for="showRib">Measurement</label>
         </div>
       </div>
+      <div class="funkyradio" style="font-size:0.8em">
+        <div class="funkyradio-info">
+          <input type="checkbox" id="showArea" checked />
+          <label for="showArea">Surface</label>
+        </div>
+      </div>
+      <div class="funkyradio" style="font-size:0.8em">
+        <div class="funkyradio-info">
+          <input type="checkbox" id="showLayerRoom" checked />
+          <label for="showLayerRoom">Texture</label>
+        </div>
+      </div>
+      <div class="funkyradio" style="font-size:0.8em">
+        <div class="funkyradio-info">
+          <input type="checkbox" id="showLayerEnergy" checked />
+          <label for="showLayerEnergy">Energy</label>
+        </div>
+      </div>
+    </div>
 
-      <li><button class="btn btn-light shadow halfy " id="report_mode" title="Show report"><i class="fa fa-calculator"
-            aria-hidden="true"></i>
-          <button class="btn btn-light shadow halfy pull-right"
-            onclick="fullscreen();this.style.display='none';$('#nofull_mode').show();" id="full_mode"
-            title="Full screen"><i class="fa fa-expand" aria-hidden="true"></i></button>
-          <button class="btn btn-light shadow halfy pull-right" style="display:none"
-            onclick="outFullscreen();this.style.display='none';$('#full_mode').show();" id="nofull_mode"
-            data-toggle="tooltip" data-placement="right" title="Full screen"><i class="fa fa-compress"
-              aria-hidden="true"></i></button>
-      <li>
-
-        <div style="clear:both"></div>
-    </ul>
   </div>
 
   <div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

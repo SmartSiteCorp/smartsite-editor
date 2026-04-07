@@ -394,4 +394,138 @@
     #ex1Slider .slider-selection {
     background: #bec7cd;
     }
+
+    /* ===== Jazaplan-style icon panel ===== */
+    #panel.leftBox {
+      background: #f0f2f5;
+      padding: 10px 8px;
+      overflow-y: auto;
+      overflow-x: visible;
+      width: 200px;
+    }
+
+    .panel-topbar {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+      justify-content: space-between;
+    }
+
+    .panel-topbar .icon-btn {
+      flex: 1;
+      height: 30px;
+      padding: 0;
+      font-size: 0.82em;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0;
+    }
+
+    .icon-card {
+      display: flex !important;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fff !important;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.09);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      padding: 10px 4px 8px;
+      min-height: 72px;
+      width: 100%;
+      margin-bottom: 0 !important;
+    }
+
+    .icon-card i {
+      font-size: 1.4em;
+      color: #00b8a9;
+      margin-bottom: 6px;
+      transition: color 0.18s;
+    }
+
+    .icon-card span.ic-label {
+      font-size: 0.52em;
+      color: #555;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .btn.icon-card:hover {
+      background: #f0fffe !important;
+      box-shadow: 0 4px 14px rgba(0,184,169,0.2) !important;
+      transform: translateY(-1px);
+    }
+
+    .btn.icon-card.btn-success {
+      background: #00b8a9 !important;
+      box-shadow: 0 4px 12px rgba(0,184,169,0.4) !important;
+    }
+
+    .btn.icon-card.btn-success i {
+      color: #fff;
+    }
+
+    .btn.icon-card.btn-success span.ic-label {
+      color: #fff;
+    }
+
+    .btn.icon-card.btn-success:hover {
+      background: #009e93 !important;
+    }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .icon-card-row {
+      display: flex;
+      flex-direction: row !important;
+      min-height: 48px !important;
+      gap: 8px;
+      padding: 8px 14px;
+    }
+
+    .icon-card-row i {
+      margin-bottom: 0;
+      font-size: 1.2em;
+    }
+
+    .icon-card-row span.ic-label {
+      font-size: 0.6em;
+    }
+
+    .panel-divider {
+      border: none;
+      border-top: 1px solid #e2e5ea;
+      margin: 8px 0;
+    }
+
+    .multi-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 6px;
+      font-size: 0.72em;
+      color: #00b8a9;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .multi-check input[type="checkbox"] {
+      accent-color: #00b8a9;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
     
