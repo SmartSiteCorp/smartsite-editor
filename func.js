@@ -167,6 +167,28 @@ function build3DPlan() {
         const wall = WALLS[i];
         if (!wall || !wall.start || !wall.end) continue;
 
+        if (wall.coords && wall.coords.length >= 4) {
+            const wallShape = new THREE.Shape();
+            wallShape.moveTo(wall.coords[0].x / meter, wall.coords[0].y / meter);
+            for (let c = 1; c < wall.coords.length; c++) {
+                wallShape.lineTo(wall.coords[c].x / meter, wall.coords[c].y / meter);
+            }
+
+            const wallGeometry = new THREE.ExtrudeGeometry(wallShape, {
+                depth: WALL_HEIGHT_3D,
+                bevelEnabled: false
+            });
+            // Extrude on Z then rotate so Z becomes vertical Y.
+            wallGeometry.rotateX(-Math.PI / 2);
+
+            const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial.clone());
+            wallMesh.castShadow = true;
+            wallMesh.receiveShadow = true;
+            threeDState.planGroup.add(wallMesh);
+            continue;
+        }
+
+        // Fallback for malformed walls without polygon coords.
         const dx = wall.end.x - wall.start.x;
         const dy = wall.end.y - wall.start.y;
         const wallLength = Math.sqrt((dx * dx) + (dy * dy)) / meter;
@@ -1581,7 +1603,7 @@ minMoveGrid = function (mouse) {
 function intersectionOff() {
     if (typeof (lineIntersectionP) != 'undefined') {
         lineIntersectionP.remove();
-        delete lineIntersectionP;
+        lineIntersectionP = undefined;
     }
 }
 
@@ -1594,7 +1616,7 @@ function intersection(snap, range = Infinity, except = ['']) {
 
     if (typeof (lineIntersectionP) != 'undefined') {
         lineIntersectionP.remove();
-        delete lineIntersectionP;
+        lineIntersectionP = undefined;
     }
 
     lineIntersectionP = qSVG.create("boxbind", "path", { // ORANGE TEMP LINE FOR ANGLE 0 90 45 -+
@@ -2097,7 +2119,7 @@ function fonc_button(modesetting, option) {
 
     if (typeof (lineIntersectionP) != 'undefined') {
         lineIntersectionP.remove();
-        delete lineIntersectionP;
+        lineIntersectionP = undefined;
     }
 }
 
