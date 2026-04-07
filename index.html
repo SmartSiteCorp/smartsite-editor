@@ -583,48 +583,58 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="textToLayerLabel">Text editor</h4>
+          <div class="te-title-block">
+            <span class="te-title-icon"><i class="fas fa-font"></i></span>
+            <h4 class="modal-title" id="textToLayerLabel">Editeur de texte</h4>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
-          <p>Choose police color</p>
-          <div class="color textEditorColor" data-type="gradientRed"
-            style="color:#f55847;background:linear-gradient(30deg, #f55847, #f00);"></div>
-          <div class="color textEditorColor" data-type="gradientYellow"
-            style="color:#e4c06e;background:linear-gradient(30deg,#e4c06e, #ffb000);"></div>
-          <div class="color textEditorColor" data-type="gradientGreen"
-            style="color:#88cc6c;background:linear-gradient(30deg,#88cc6c, #60c437);"></div>
-          <div class="color textEditorColor" data-type="gradientSky"
-            style="color:#77e1f4;background:linear-gradient(30deg,#77e1f4, #00d9ff);"></div>
-          <div class="color textEditorColor" data-type="gradientBlue"
-            style="color:#4f72a6;background:linear-gradient(30deg,#4f72a6, #284d7e);"></div>
-          <div class="color textEditorColor" data-type="gradientGrey"
-            style="color:#666666;background:linear-gradient(30deg,#666666, #aaaaaa);"></div>
-          <div class="color textEditorColor" data-type="gradientWhite"
-            style="color:#fafafa;background:linear-gradient(30deg,#fafafa, #eaeaea);"></div>
-          <div class="color textEditorColor" data-type="gradientOrange"
-            style="color:#f9ad67;background:linear-gradient(30deg, #f9ad67, #f97f00);"></div>
-          <div class="color textEditorColor" data-type="gradientPurple"
-            style="color:#a784d9;background:linear-gradient(30deg,#a784d9, #8951da);"></div>
-          <div class="color textEditorColor" data-type="gradientPink"
-            style="color:#df67bd;background:linear-gradient(30deg,#df67bd, #e22aae);"></div>
-          <div class="color textEditorColor" data-type="gradientBlack"
-            style="color:#3c3b3b;background:linear-gradient(30deg,#3c3b3b, #000000);"></div>
-          <div class="color textEditorColor" data-type="gradientNeutral"
-            style="color:#e2c695;background:linear-gradient(30deg,#e2c695, #c69d56);"></div>
-          <div style="clear:both"></div>
-          <hr />
-          <p>Police size</p>
-          <input type="range" list="tickmarks" id="sizePolice" step="0.1" min="10" max="30" value="15" class="range"
-            style="width:200px" />
-          <hr />
-          <p contenteditable="true" id="labelBox" onfocus="this.innerHTML='';"
-            style="font-size:15px;padding:5px;border-radius:5px;color:#333">Your text</p>
+          <div class="text-editor-section">
+            <p class="text-editor-label">Couleur du texte</p>
+            <div class="text-color-swatches">
+              <div class="color textEditorColor" data-type="gradientRed"
+                style="color:#f55847;background:linear-gradient(30deg, #f55847, #f00);"></div>
+              <div class="color textEditorColor" data-type="gradientYellow"
+                style="color:#e4c06e;background:linear-gradient(30deg,#e4c06e, #ffb000);"></div>
+              <div class="color textEditorColor" data-type="gradientGreen"
+                style="color:#88cc6c;background:linear-gradient(30deg,#88cc6c, #60c437);"></div>
+              <div class="color textEditorColor" data-type="gradientSky"
+                style="color:#77e1f4;background:linear-gradient(30deg,#77e1f4, #00d9ff);"></div>
+              <div class="color textEditorColor" data-type="gradientBlue"
+                style="color:#4f72a6;background:linear-gradient(30deg,#4f72a6, #284d7e);"></div>
+              <div class="color textEditorColor" data-type="gradientGrey"
+                style="color:#666666;background:linear-gradient(30deg,#666666, #aaaaaa);"></div>
+              <div class="color textEditorColor" data-type="gradientWhite"
+                style="color:#fafafa;background:linear-gradient(30deg,#fafafa, #eaeaea);"></div>
+              <div class="color textEditorColor" data-type="gradientOrange"
+                style="color:#f9ad67;background:linear-gradient(30deg, #f9ad67, #f97f00);"></div>
+              <div class="color textEditorColor" data-type="gradientPurple"
+                style="color:#a784d9;background:linear-gradient(30deg,#a784d9, #8951da);"></div>
+              <div class="color textEditorColor" data-type="gradientPink"
+                style="color:#df67bd;background:linear-gradient(30deg,#df67bd, #e22aae);"></div>
+              <div class="color textEditorColor" data-type="gradientBlack"
+                style="color:#3c3b3b;background:linear-gradient(30deg,#3c3b3b, #000000);"></div>
+              <div class="color textEditorColor" data-type="gradientNeutral"
+                style="color:#e2c695;background:linear-gradient(30deg,#e2c695, #c69d56);"></div>
+            </div>
+          </div>
+          <div class="text-editor-section">
+            <p class="text-editor-label">Taille du texte</p>
+            <div class="te-slider-row">
+              <span class="te-size-s">A</span>
+              <input type="range" list="tickmarks" id="sizePolice" step="0.1" min="10" max="30" value="15" class="range" />
+              <span class="te-size-l">A</span>
+            </div>
+          </div>
+          <div class="text-editor-section last">
+            <p class="text-editor-label">Contenu</p>
+            <p contenteditable="true" id="labelBox" onfocus="this.innerHTML='';">Votre texte</p>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-light shadow" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="$('#textToLayer').modal('hide');">Apply</button>
+          <button type="button" class="btn te-btn-cancel" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn te-btn-apply" onclick="$('#textToLayer').modal('hide');">Appliquer</button>
         </div>
       </div>
     </div>

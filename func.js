@@ -1177,7 +1177,7 @@ $('#textToLayer').on('hidden.bs.modal', function (e) {
     fonc_button('select_mode');
     action = 0;
     let textToMake = document.getElementById('labelBox').textContent;
-    if (textToMake != "" && textToMake != "Your text") {
+    if (textToMake != "" && textToMake != "Votre texte") {
         // Récupérer la couleur avec getComputedStyle pour s'assurer qu'elle est définie
         const labelBox = document.getElementById('labelBox');
         let textColor = window.getComputedStyle(labelBox).color;
@@ -1220,7 +1220,7 @@ $('#textToLayer').on('hidden.bs.modal', function (e) {
     } else {
         $('#boxinfo').html('Mode selection');
     }
-    document.getElementById('labelBox').textContent = "Your text";
+    document.getElementById('labelBox').textContent = "Votre texte";
     document.getElementById('labelBox').style.color = "#333333";
     document.getElementById('labelBox').style.fontSize = "15px";
     document.getElementById('sizePolice').value = 15;

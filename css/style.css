@@ -602,4 +602,177 @@
       height: 14px;
       cursor: pointer;
     }
+
+    /* ===== Text Editor Modal ===== */
+    #textToLayer .modal-content {
+      border: 0;
+      border-top: 3px solid #00b8a9;
+      border-radius: 14px;
+      box-shadow: 0 18px 38px rgba(11, 31, 50, 0.18);
+      overflow: hidden;
+    }
+
+    #textToLayer .modal-header {
+      border-bottom: 1px solid #edf1f4;
+      padding: 14px 18px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #textToLayer .te-title-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #textToLayer .te-title-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #00b8a9, #00d4c0);
+      color: #fff;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.88rem;
+      box-shadow: 0 2px 8px rgba(0,184,169,0.35);
+      flex-shrink: 0;
+    }
+
+    #textToLayer .modal-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #184a54;
+      letter-spacing: 0.2px;
+      margin: 0;
+    }
+
+    #textToLayer .modal-body {
+      padding: 0 18px;
+      background: #ffffff;
+    }
+
+    #textToLayer .text-editor-section {
+      padding: 14px 0;
+      border-bottom: 1px solid #edf1f4;
+    }
+
+    #textToLayer .text-editor-section.last {
+      border-bottom: none;
+    }
+
+    #textToLayer .text-editor-label {
+      margin-bottom: 10px;
+      color: #8a9baa;
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    #textToLayer .text-color-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    #textToLayer .color.textEditorColor {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    #textToLayer .color.textEditorColor:hover {
+      transform: translateY(-2px) scale(1.12);
+      border-color: #00b8a9;
+      box-shadow: 0 4px 12px rgba(0,184,169,0.35);
+    }
+
+    #textToLayer .te-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #textToLayer .te-size-s {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #aab8c2;
+      line-height: 1;
+    }
+
+    #textToLayer .te-size-l {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #aab8c2;
+      line-height: 1;
+    }
+
+    #textToLayer #sizePolice {
+      flex: 1;
+      accent-color: #00b8a9;
+    }
+
+    #textToLayer #labelBox {
+      width: 100%;
+      min-height: 58px;
+      border: 1.5px solid #d8e2e6;
+      background: #f5f9fa;
+      padding: 10px 14px;
+      border-radius: 10px;
+      outline: none;
+      color: #333;
+      font-size: 0.95rem;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    #textToLayer #labelBox:focus {
+      border-color: #00b8a9;
+      box-shadow: 0 0 0 3px rgba(0,184,169,0.16);
+      background: #ffffff;
+    }
+
+    #textToLayer .modal-footer {
+      border-top: 1px solid #edf1f4;
+      padding: 12px 18px 16px;
+      background: #f8fbfc;
+      gap: 8px;
+    }
+
+    #textToLayer .te-btn-cancel {
+      background: transparent;
+      border: 1.5px solid #d0d9de;
+      color: #545f6d;
+      font-weight: 500;
+      min-width: 85px;
+      border-radius: 8px;
+    }
+
+    #textToLayer .te-btn-cancel:hover {
+      background: #f0f2f5;
+      border-color: #bac6cc;
+    }
+
+    #textToLayer .te-btn-apply {
+      background: #00b8a9;
+      border-color: #00b8a9;
+      color: #fff;
+      font-weight: 600;
+      min-width: 95px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,184,169,0.3);
+    }
+
+    #textToLayer .te-btn-apply:hover {
+      background: #009d90;
+      border-color: #009d90;
+      box-shadow: 0 4px 14px rgba(0,184,169,0.4);
+    }
     
