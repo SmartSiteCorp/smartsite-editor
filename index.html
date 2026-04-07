@@ -165,7 +165,7 @@
       <li><button class="btn btn-danger fully" id="wallTrash"><i class="fa fa-2x fa-trash"
             aria-hidden="true"></i></button></li>
       <li><button class="btn btn-info fully" style="margin-top:50px"
-          onclick="fonc_button('select_mode');$('#boxinfo').html('Selection mode');$('#wallTools').hide('300');$('#panel').show('300');"><i
+          onclick="fonc_button('select_mode');$('#boxinfo').html('Mode selection');$('#wallTools').hide('300');$('#panel').show('300');"><i
             class="fa fa-2x fa-backward" aria-hidden="true"></i></button></li>
     </ul>
   </div>
@@ -230,7 +230,7 @@
     <br /><br />
     <button class="btn btn-danger fully" id="bboxTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
     <button class="btn btn-info" style="margin-top:100px"
-      onclick="fonc_button('select_mode');$('#boxinfo').html('Selection mode');$('#objBoundingBox').hide(100);$('#panel').show(200);binder.graph.remove();delete binder;"><i
+      onclick="fonc_button('select_mode');$('#boxinfo').html('Mode selection');$('#objBoundingBox').hide(100);$('#panel').show(200);binder.graph.remove();delete binder;"><i
         class="fa fa-2x fa-backward" aria-hidden="true"></i></button>
   </div>
 
@@ -247,7 +247,7 @@
       <li><button class="btn btn-danger fully objTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
       </li>
       <li><button class="btn btn-info" style="margin-top:100px"
-          onclick="fonc_button('select_mode');$('#boxinfo').html('Selection mode');$('#objTools').hide('100');$('#panel').show('200');binder.graph.remove();delete binder;rib();"><i
+          onclick="fonc_button('select_mode');$('#boxinfo').html('Mode selection');$('#objTools').hide('100');$('#panel').show('200');binder.graph.remove();delete binder;rib();"><i
             class="fa fa-2x fa-backward" aria-hidden="true"></i></button></li>
     </ul>
   </div>
@@ -630,7 +630,7 @@
     </div>
   </div>
 
-  <div style="position:absolute;bottom:10px;left:210px;font-size:1.5em;color:#08d" id="boxinfo">
+  <div id="boxinfo">
   </div>
 
   <!-- Hidden file input for image selection -->

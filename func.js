@@ -1218,7 +1218,7 @@ $('#textToLayer').on('hidden.bs.modal', function (e) {
         $('#boxinfo').html('Added text');
         save();
     } else {
-        $('#boxinfo').html('Selection mode');
+        $('#boxinfo').html('Mode selection');
     }
     document.getElementById('labelBox').textContent = "Your text";
     document.getElementById('labelBox').style.color = "#333333";
@@ -1446,7 +1446,7 @@ for (let k = 0; k < objTrashBtn.length; k++) {
         obj.graph.remove();
         OBJDATA.splice(OBJDATA.indexOf(obj), 1);
         fonc_button('select_mode');
-        $('#boxinfo').html('Selection mode');
+        $('#boxinfo').html('Mode selection');
         $('#panel').show('200');
         binder.graph.remove();
         binder = null;
@@ -2132,18 +2132,18 @@ function fonc_button(modesetting, option) {
 
 $('#distance_mode').click(function () {
     linElement.css('cursor', 'crosshair');
-    $('#boxinfo').html('Add a measurement');
+    $('#boxinfo').html('Ajouter une mesure');
     fonc_button('distance_mode');
 });
 
 $('#room_mode').click(function () {
     linElement.css('cursor', 'pointer');
-    $('#boxinfo').html('Config. of rooms');
+    $('#boxinfo').html('Configuration des pieces');
     fonc_button('room_mode');
 });
 
 $('#select_mode').click(function () {
-    $('#boxinfo').html('Mode "select"');
+    $('#boxinfo').html('Mode selection');
     if (typeof (binder) != 'undefined') {
         binder.remove();
         binder = null;
@@ -2154,7 +2154,7 @@ $('#select_mode').click(function () {
 
 $('#line_mode').click(function () {
     linElement.css('cursor', 'crosshair');
-    $('#boxinfo').html('Creation of wall(s)');
+    $('#boxinfo').html('Creation de mur(s)');
     multi = 0;
     action = 0;
     // snap = calcul_snap(event, grid_snap);
@@ -2166,27 +2166,27 @@ $('#line_mode').click(function () {
 
 $('#partition_mode').click(function () {
     linElement.css('cursor', 'crosshair');
-    $('#boxinfo').html('Creation of thin wall(s)');
+    $('#boxinfo').html('Creation de cloison(s)');
     multi = 0;
     fonc_button('partition_mode');
 });
 
 $('#rect_mode').click(function () {
     linElement.css('cursor', 'crosshair');
-    $('#boxinfo').html('Room(s) creation');
+    $('#boxinfo').html('Creation de piece(s)');
     fonc_button('rect_mode');
 });
 
 $('.door').click(function () {
     linElement.css('cursor', 'crosshair');
-    $('#boxinfo').html('Add a door');
+    $('#boxinfo').html('Ajouter une porte');
     $('#door_list').hide(200);
     fonc_button('door_mode', this.id);
 });
 
 $('.window').click(function () {
     linElement.css('cursor', 'crosshair');
-    $('#boxinfo').html('Add a window');
+    $('#boxinfo').html('Ajouter une fenetre');
     $('#door_list').hide(200);
     $('#window_list').hide(200);
     fonc_button('door_mode', this.id);
@@ -2194,31 +2194,29 @@ $('.window').click(function () {
 
 $('.object').click(function () {
     cursor('move');
-    $('#boxinfo').html('Add an object');
+    $('#boxinfo').html('Ajouter un objet');
     fonc_button('object_mode', this.id);
 });
 
 $('#stair_mode').click(function () {
     cursor('move');
-    $('#boxinfo').html('Add stair');
+    $('#boxinfo').html('Ajouter un escalier');
     fonc_button('object_mode', 'simpleStair');
 });
 
 $('#node_mode').click(function () {
     $('#boxinfo')
-        .html('Cut a wall<br/><span style=\"font-size:0.7em\">Warning : Cutting the wall of a room can cancel its ' +
-            'configuration</span>');
+        .html('Decouper un mur<br/><span style=\"font-size:0.7em\">Attention : decouper le mur d\'une piece peut annuler sa configuration.</span>');
     fonc_button('node_mode');
 });
 
 $('#text_mode').click(function () {
-    $('#boxinfo').html('Add text<br/><span style=\"font-size:0.7em\">Place the cursor to the desired location, then ' +
-        'type your text.</span>');
+    $('#boxinfo').html('Ajouter un texte<br/><span style=\"font-size:0.7em\">Placez le curseur a l\'endroit souhaite, puis saisissez votre texte.</span>');
     fonc_button('text_mode');
 });
 
 $('#image_mode').click(function () {
-    $('#boxinfo').html('Add image<br/><span style=\"font-size:0.7em\">Select an image from your computer.</span>');
+    $('#boxinfo').html('Ajouter une image<br/><span style=\"font-size:0.7em\">Selectionnez une image depuis votre ordinateur.</span>');
     $('#imageFileInput').trigger('click');
 });
 
@@ -2247,7 +2245,7 @@ $('#imageFileInput').on('change', function(event) {
                 
                 mode = 'image_mode';
                 fonc_button('image_mode');
-                $('#boxinfo').html('Click to place the image<br/><span style=\"font-size:0.7em\">The image will be placed with 50% transparency.</span>');
+                $('#boxinfo').html('Cliquez pour placer l\'image<br/><span style=\"font-size:0.7em\">L\'image sera placee avec 50% de transparence.</span>');
             };
             img.src = e.target.result;
         };
@@ -2260,14 +2258,14 @@ $('#imageFileInput').on('change', function(event) {
 $('#grid_mode').click(function () {
     if (grid_snap === 'on') {
         grid_snap = 'off';
-        $('#boxinfo').html('Help grid off');
+        $('#boxinfo').html('Grille d\'aide desactivee');
         $('#grid_mode').removeClass('btn-success');
         $('#grid_mode').addClass('btn-warning');
         $('#grid_mode').html('GRID OFF');
         $('#boxgrid').css('opacity', '0.5');
     } else {
         grid_snap = 'on';
-        $('#boxinfo').html('Help grid on');
+        $('#boxinfo').html('Grille d\'aide activee');
         $('#grid_mode').removeClass('btn-warning');
         $('#grid_mode').addClass('btn-success');
         $('#grid_mode').html('GRID ON <i class="fa fa-th" aria-hidden="true"></i>');

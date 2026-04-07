@@ -126,6 +126,27 @@
       color: #545f6d;
     }
 
+    #boxinfo {
+      position: absolute;
+      bottom: 62px;
+      left: 210px;
+      z-index: 7;
+      max-width: 520px;
+      line-height: 1.25;
+      font-size: 1.02em;
+      color: #177a70;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(23, 122, 112, 0.15);
+      border-radius: 10px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      padding: 6px 12px;
+      backdrop-filter: blur(2px);
+    }
+
+    #boxinfo:empty {
+      display: none;
+    }
+
     body.view3d-active #toggle3dView {
       background: #00b8a9 !important;
       box-shadow: 0 4px 12px rgba(0,184,169,0.38) !important;
@@ -151,13 +172,26 @@
     }
 
     body.view3d-active #boxinfo {
-      z-index: 6;
+      z-index: 7;
       color: #e5e7eb;
+      background: rgba(17, 24, 39, 0.6);
+      border-color: rgba(229, 231, 235, 0.2);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
     }
 
     body.view3d-active #moveBox,
     body.view3d-active #zoomBox {
       display: none;
+    }
+
+    @media (max-width: 800px) {
+      #boxinfo {
+        left: 12px;
+        right: 12px;
+        max-width: none;
+        bottom: 56px;
+        font-size: 0.92em;
+      }
     }
     input[type=range] {
       -webkit-appearance: none;
