@@ -346,6 +346,8 @@ function toggle3DView() {
     }
 
     const button = document.getElementById('toggle3dView');
+    const label = button ? button.querySelector('.toggle3d-label') : null;
+    const icon = button ? button.querySelector('i') : null;
     threeDState.active = !threeDState.active;
 
     if (threeDState.active) {
@@ -357,13 +359,17 @@ function toggle3DView() {
         if (!threeDState.rafId) {
             render3DLoop();
         }
-        if (button) button.textContent = 'Vue 2D';
+        if (label) label.textContent = 'VUE 2D';
+        if (icon) icon.className = 'fa fa-drafting-compass';
+        if (button) button.setAttribute('aria-pressed', 'true');
         $('#boxinfo').html('Vue 3D active');
     } else {
         document.body.classList.remove('view3d-active');
         threeDState.container.style.display = 'none';
         threeDState.container.setAttribute('aria-hidden', 'true');
-        if (button) button.textContent = 'Vue 3D';
+        if (label) label.textContent = 'VUE 3D';
+        if (icon) icon.className = 'fa fa-cube';
+        if (button) button.setAttribute('aria-pressed', 'false');
         $('#boxinfo').html('Retour en vue 2D');
     }
 }

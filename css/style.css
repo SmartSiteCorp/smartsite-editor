@@ -98,11 +98,52 @@
 
     #toggle3dView {
       position: fixed;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 16px;
+      left: 214px;
+      transform: none;
       z-index: 6;
-      min-width: 130px;
+      min-width: 124px;
+      min-height: 38px;
+      padding: 6px 10px;
+      margin: 0;
+      border-radius: 12px;
+      width: auto !important;
+      max-width: max-content;
+      display: inline-flex !important;
+      white-space: nowrap;
+    }
+
+    #toggle3dView i {
+      color: #00b8a9;
+      margin-bottom: 0;
+      font-size: 1.05em;
+    }
+
+    #toggle3dView .toggle3d-label {
+      font-size: 0.58em;
+      letter-spacing: 0.7px;
+      font-weight: 700;
+      color: #545f6d;
+    }
+
+    body.view3d-active #toggle3dView {
+      background: #00b8a9 !important;
+      box-shadow: 0 4px 12px rgba(0,184,169,0.38) !important;
+    }
+
+    body.view3d-active #toggle3dView i,
+    body.view3d-active #toggle3dView .toggle3d-label {
+      color: #fff;
+    }
+
+    @media (max-width: 800px) {
+      #toggle3dView {
+        left: 12px;
+        bottom: 12px;
+        min-width: 112px;
+        min-height: 34px;
+        padding: 5px 9px;
+      }
     }
 
     body.view3d-active #lin {
