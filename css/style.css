@@ -399,8 +399,7 @@
     #panel.leftBox {
       background: #f0f2f5;
       padding: 10px 8px;
-      overflow-y: auto;
-      overflow-x: visible;
+      overflow: visible;
       width: 200px;
     }
 

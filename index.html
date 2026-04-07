@@ -425,11 +425,25 @@
         <i class="fa fa-door-open"></i>
         <span class="ic-label">PORTE</span>
       </button>
+      <div id="door_list" class="list-unstyled sub"
+        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;width:150px">
+        <button class="btn fully door" id="aperture">Aperture</button>
+        <button class="btn fully door" id="simple">Simple</button>
+        <button class="btn fully door" id="double">Double</button>
+        <button class="btn fully door" id="pocket">Pocket</button>
+      </div>
       <button class="btn btn-light shadow icon-card" id="window_mode" title="Fenêtre"
         onclick="$('.sub').hide();$('#window_list').toggle(200);$('#door_list').hide()">
         <i class="fa fa-window-maximize"></i>
         <span class="ic-label">FENÊTRE</span>
       </button>
+      <div id="window_list" class="list-unstyled sub"
+        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;width:150px">
+        <button class="btn fully window" id="fix">Fix</button>
+        <button class="btn fully window" id="flap">Simple</button>
+        <button class="btn fully window" id="twin">Double</button>
+        <button class="btn fully window" id="bay">Slide</button>
+      </div>
       <button class="btn btn-light shadow icon-card object" id="stair_mode" title="Escalier"
         onclick="$('.sub').hide();$('#door_list').hide()">
         <i class="fa fa-stairs"></i>
@@ -468,22 +482,6 @@
     </div>
 
     <!-- Sub-panels (positioned absolutely, appear to the right of the panel) -->
-    <div id="door_list" class="list-unstyled sub"
-      style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;width:150px">
-      <button class="btn fully door" id="aperture">Aperture</button>
-      <button class="btn fully door" id="simple">Simple</button>
-      <button class="btn fully door" id="double">Double</button>
-      <button class="btn fully door" id="pocket">Pocket</button>
-    </div>
-
-    <div id="window_list" class="list-unstyled sub"
-      style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;width:150px">
-      <button class="btn fully window" id="fix">Fix</button>
-      <button class="btn fully window" id="flap">Simple</button>
-      <button class="btn fully window" id="twin">Double</button>
-      <button class="btn fully window" id="bay">Slide</button>
-    </div>
-
     <div id="energy_list" class="list-unstyled sub"
       style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0;padding:10px;position:absolute;left:200px;bottom:40px;width:600px">
       <div style="width:600px;float:left;padding:10px">
