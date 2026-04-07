@@ -10,7 +10,8 @@ document.querySelector('#panel').addEventListener('mousemove', function (event) 
   if ((mode == 'line_mode' || mode == 'partition_mode') && action == 1) {
     action = 0;
     if (binder) {
-      binder.remove();
+      if (typeof binder.remove === 'function') binder.remove();
+      else if (binder.graph && typeof binder.graph.remove === 'function') binder.graph.remove();
       binder = null;
     }
     $('#linetemp').remove();
@@ -256,8 +257,9 @@ function _MOUSEMOVE(event) {
       binder.id = ROOM.indexOf(roomTarget);
     }
     else {
-      if (typeof (binder) != 'undefined') {
-        binder.remove();
+      if (binder) {
+        if (typeof binder.remove === 'function') binder.remove();
+        else if (binder.graph && typeof binder.graph.remove === 'function') binder.graph.remove();
         binder = null;
       }
     }
@@ -330,8 +332,9 @@ function _MOUSEMOVE(event) {
       }
     }
     else {
-      if (typeof (binder) != 'undefined') {
-        binder.graph.remove();
+      if (binder) {
+        if (binder.graph && typeof binder.graph.remove === 'function') binder.graph.remove();
+        else if (typeof binder.remove === 'function') binder.remove();
         binder = null;
       }
     }
@@ -1169,7 +1172,7 @@ function _MOUSEDOWN(event) {
   // **********************   SELECT MODE + BIND   *********************
   // *******************************************************************
   if (mode == 'select_mode') {
-    if (typeof (binder) != 'undefined' && (binder.type == 'segment' || binder.type == 'node' || binder.type == 'obj' || binder.type == 'boundingBox')) {
+    if (binder && (binder.type == 'segment' || binder.type == 'node' || binder.type == 'obj' || binder.type == 'boundingBox')) {
       mode = 'bind_mode';
 
       if (binder.type == 'obj') {
@@ -1400,7 +1403,8 @@ function _MOUSEUP(event) {
   cursor('default');
   if (mode == 'select_mode') {
     if (binder) {
-      binder.remove();
+      if (typeof binder.remove === 'function') binder.remove();
+      else if (binder.graph && typeof binder.graph.remove === 'function') binder.graph.remove();
       binder = null;
       save();
     }
@@ -1411,11 +1415,12 @@ function _MOUSEUP(event) {
   //**************************************************************************
   if (mode == 'text_mode') {
     if (action == 0) {
+      snap = calcul_snap(event, grid_snap);
       action = 1;
       const textModal = new bootstrap.Modal($('#textToLayer'))
 
       textModal.show();
-      mode == 'edit_text_mode';
+      mode = 'edit_text_mode';
     }
   }
 
@@ -1604,7 +1609,7 @@ function _MOUSEUP(event) {
 
   if (mode == 'room_mode') {
 
-    if (typeof (binder) == "undefined") {
+    if (!binder) {
       return false;
     }
 
@@ -1641,11 +1646,12 @@ function _MOUSEUP(event) {
   // *******************************************************************
 
   if (mode == 'node_mode') {
-    if (typeof (binder) != 'undefined') { // ALSO ON MOUSEUP WITH HAVE CIRCLEBINDER ON ADDPOINT
+    if (binder) { // ALSO ON MOUSEUP WITH HAVE CIRCLEBINDER ON ADDPOINT
       var newWall = new editor.wall({ x: binder.data.x, y: binder.data.y }, binder.data.wall.end, "normal", binder.data.wall.thick);
       WALLS.push(newWall);
       binder.data.wall.end = { x: binder.data.x, y: binder.data.y };
-      binder.remove();
+      if (typeof binder.remove === 'function') binder.remove();
+      else if (binder.graph && typeof binder.graph.remove === 'function') binder.graph.remove();
       binder = null;
       editor.architect(WALLS);
       save();
@@ -1658,7 +1664,7 @@ function _MOUSEUP(event) {
   // *******************************************************************  ***** ****       ******  ******  ******  ***
 
   if (mode == 'door_mode') {
-    if (typeof (binder) == "undefined") {
+    if (!binder) {
       $('#boxinfo').html('The plan currently contains no wall.');
       fonc_button('select_mode');
       return false;
@@ -1711,8 +1717,9 @@ function _MOUSEUP(event) {
       construc = 0;
       $('#boxinfo').html('Select mode');
       fonc_button('select_mode');
-      if (typeof (binder) != 'undefined') {
-        binder.remove();
+      if (binder) {
+        if (typeof binder.remove === 'function') binder.remove();
+        else if (binder.graph && typeof binder.graph.remove === 'function') binder.graph.remove();
         binder = null;
       }
       snap = calcul_snap(event, grid_snap);
@@ -1729,7 +1736,7 @@ function _MOUSEUP(event) {
   if (mode == 'bind_mode') {
     action = 0;
     construc = 0; // CONSTRUC 0 TO FREE BINDER GROUP NODE WALL MOVING
-    if (typeof (binder) != 'undefined') {
+    if (binder) {
       fonc_button('select_mode');
       if (binder.type == 'node') {
 
@@ -1800,7 +1807,7 @@ function _MOUSEUP(event) {
         }
       }
 
-      if (typeof (binder) != 'undefined' && binder.type == 'boundingBox') {
+      if (binder && binder.type == 'boundingBox') {
         var moveObj = Math.abs(binder.oldX - binder.x) + Math.abs(binder.oldY - binder.y);
         var objTarget = binder.obj;
         if (!objTarget.params.move) {
@@ -1877,7 +1884,8 @@ function _MOUSEUP(event) {
       }
 
       if (mode == 'bind_mode') {
-        binder.remove();
+        if (typeof binder.remove === 'function') binder.remove();
+        else if (binder.graph && typeof binder.graph.remove === 'function') binder.graph.remove();
         binder = null;
       }
     } // END BIND IS DEFINED
