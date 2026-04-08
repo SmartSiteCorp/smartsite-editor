@@ -2144,10 +2144,10 @@ $('#room_mode').click(function () {
 
 $('#select_mode').click(function () {
     $('#boxinfo').html('Mode selection');
-    if (typeof (binder) != 'undefined') {
+    if (binder && typeof binder.remove === 'function') {
         binder.remove();
-        binder = null;
     }
+    binder = null;
 
     fonc_button('select_mode');
 });
