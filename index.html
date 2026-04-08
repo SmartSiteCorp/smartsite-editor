@@ -12,6 +12,7 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> -->
+  <link rel="icon" type="image/jpeg" href="img/newPlanSquare.jpg">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -73,24 +74,16 @@
       </linearGradient>
 
       <pattern id="grass" patternUnits="userSpaceOnUse" width="256" height="256">
-        <image
-          xlink:href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWh5nEP_Trwo96CJjev6lnKe0_dRdA63RJFaoc3-msedgxveJd"
-          x="0" y="0" width="256" height="256" />
+        <image xlink:href="img/newPlanEmpty.jpg" x="0" y="0" width="256" height="256" />
       </pattern>
       <pattern id="wood" patternUnits="userSpaceOnUse" width="32" height="256">
-        <image
-          xlink:href="https://orig00.deviantart.net/e1f2/f/2015/164/8/b/old_oak_planks___seamless_texture_by_rls0812-d8x6htl.jpg"
-          x="0" y="0" width="256" height="256" />
+        <image xlink:href="img/newPlanSquare.jpg" x="0" y="0" width="256" height="256" />
       </pattern>
       <pattern id="tiles" patternUnits="userSpaceOnUse" width="25" height="25">
-        <image
-          xlink:href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrkoI2Eiw8ya3J_swhfpZdi_ug2sONsI6TxEd1xN5af3DX9J3R"
-          x="0" y="0" width="256" height="256" />
+        <image xlink:href="img/newPlanL.jpg" x="0" y="0" width="256" height="256" />
       </pattern>
       <pattern id="granite" patternUnits="userSpaceOnUse" width="256" height="256">
-        <image
-          xlink:href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9_nEMhnWVV47lxEn5T_HWxvFwkujFTuw6Ff26dRTl4rDaE8AdEQ"
-          x="0" y="0" width="256" height="256" />
+        <image xlink:href="img/newPlanSquare.jpg" x="0" y="0" width="256" height="256" />
       </pattern>
       <pattern id="smallGrid" width="60" height="60" patternUnits="userSpaceOnUse">
         <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#777" stroke-width="0.25" />
@@ -230,7 +223,7 @@
     <br /><br />
     <button class="btn btn-danger fully" id="bboxTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
     <button class="btn btn-info" style="margin-top:100px"
-      onclick="fonc_button('select_mode');$('#boxinfo').html('Mode selection');$('#objBoundingBox').hide(100);$('#panel').show(200);binder.graph.remove();delete binder;"><i
+      onclick="fonc_button('select_mode');$('#boxinfo').html('Mode selection');$('#objBoundingBox').hide(100);$('#panel').show(200);binder.graph.remove();binder = null;"><i
         class="fa fa-2x fa-backward" aria-hidden="true"></i></button>
   </div>
 
@@ -246,8 +239,8 @@
       <br />
       <li><button class="btn btn-danger fully objTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
       </li>
-      <li><button class="btn btn-info" style="margin-top:100px"
-          onclick="fonc_button('select_mode');$('#boxinfo').html('Mode selection');$('#objTools').hide('100');$('#panel').show('200');binder.graph.remove();delete binder;rib();"><i
+        <li><button class="btn btn-info" style="margin-top:100px"
+          onclick="fonc_button('select_mode');$('#boxinfo').html('Mode selection');$('#objTools').hide('100');$('#panel').show('200');binder.graph.remove();binder = null;rib();"><i
             class="fa fa-2x fa-backward" aria-hidden="true"></i></button></li>
     </ul>
   </div>
@@ -327,16 +320,16 @@
     <br /><br />
     <p>Matérials</p>
     <div class="roomColor" data-type="wood"
-      style="background: url('https://orig00.deviantart.net/e1f2/f/2015/164/8/b/old_oak_planks___seamless_texture_by_rls0812-d8x6htl.jpg');">
+      style="background: url('img/newPlanSquare.jpg');">
     </div>
     <div class="roomColor" data-type="tiles"
-      style="background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrkoI2Eiw8ya3J_swhfpZdi_ug2sONsI6TxEd1xN5af3DX9J3R');">
+      style="background: url('img/newPlanL.jpg');">
     </div>
     <div class="roomColor" data-type="granite"
-      style="background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9_nEMhnWVV47lxEn5T_HWxvFwkujFTuw6Ff26dRTl4rDaE8AdEQ');">
+      style="background: url('img/newPlanSquare.jpg');">
     </div>
     <div class="roomColor" data-type="grass"
-      style="background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWh5nEP_Trwo96CJjev6lnKe0_dRdA63RJFaoc3-msedgxveJd');">
+      style="background: url('img/newPlanEmpty.jpg');">
     </div>
     <div data-type="#ff008a" style="clear:both"></div>
     <br /><br />

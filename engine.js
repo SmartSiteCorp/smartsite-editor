@@ -16,7 +16,7 @@ document.querySelector('#panel').addEventListener('mousemove', function (event) 
     }
     $('#linetemp').remove();
     $('#line_construc').remove();
-    lengthTemp.remove();
+    if (lengthTemp && typeof lengthTemp.remove === 'function') lengthTemp.remove();
     lengthTemp = null;
   }
 });
@@ -764,7 +764,7 @@ function _MOUSEMOVE(event) {
           x: x,
           y: y
         })) / 60).toFixed(2);
-        if (typeof (lengthTemp) == 'undefined') {
+        if (!lengthTemp) {
           lengthTemp = document.createElementNS('http://www.w3.org/2000/svg', 'text');
           lengthTemp.setAttributeNS(null, 'x', startText.x);
           lengthTemp.setAttributeNS(null, 'y', (startText.y) - 15);
@@ -775,13 +775,13 @@ function _MOUSEMOVE(event) {
           lengthTemp.textContent = valueText + 'm';
           $('#boxbind').append(lengthTemp);
         }
-        if (typeof (lengthTemp) != 'undefined' && valueText > 0.1) {
+        if (lengthTemp && valueText > 0.1) {
           lengthTemp.setAttributeNS(null, 'x', startText.x);
           lengthTemp.setAttributeNS(null, 'y', (startText.y) - 15);
           lengthTemp.setAttribute("transform", "rotate(" + angleText.deg + " " + startText.x + "," + startText.y + ")");
           lengthTemp.textContent = valueText + ' m';
         }
-        if (typeof (lengthTemp) != 'undefined' && valueText < 0.1) {
+        if (lengthTemp && valueText < 0.1) {
           lengthTemp.textContent = "";
         }
       }
@@ -1703,7 +1703,7 @@ function _MOUSEUP(event) {
       $('#boxinfo').html('Wall added <span style=\'font-size:0.6em\'>Moy. ' + (qSVG.measure(
         { x: pox, y: poy }, { x: x, y: y }) / 60).toFixed(2) + ' m</span>');
       $('#line_construc').remove(); // DEL LINE CONSTRUC HELP TO VIEW NEW SEG PATH
-      lengthTemp.remove();
+      if (lengthTemp && typeof lengthTemp.remove === 'function') lengthTemp.remove();
       lengthTemp = null;
       construc = 0;
       if (wallEndConstruc) action = 0;
