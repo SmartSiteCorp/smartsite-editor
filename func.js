@@ -70,7 +70,7 @@ function init3DView() {
     scene.background = new THREE.Color(0xf4eee3);
 
     const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
-    camera.position.set(8, 8, 8);
+    camera.position.set(-8, 8, -8);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.shadowMap.enabled = true;
@@ -156,6 +156,8 @@ function build3DPlan() {
 
     clear3DPlan();
     threeDState.planGroup.position.set(0, 0, 0);
+    const to3DX = (x) => -(x / meter);
+    const to3DZ = (y) => -(y / meter);
 
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf6f1e8, roughness: 0.8, metalness: 0.02 });
     const topMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdf8, roughness: 0.88, metalness: 0.01 });
@@ -169,9 +171,9 @@ function build3DPlan() {
 
         if (wall.coords && wall.coords.length >= 4) {
             const wallShape = new THREE.Shape();
-            wallShape.moveTo(wall.coords[0].x / meter, wall.coords[0].y / meter);
+            wallShape.moveTo(to3DX(wall.coords[0].x), wall.coords[0].y / meter);
             for (let c = 1; c < wall.coords.length; c++) {
-                wallShape.lineTo(wall.coords[c].x / meter, wall.coords[c].y / meter);
+                wallShape.lineTo(to3DX(wall.coords[c].x), wall.coords[c].y / meter);
             }
 
             const wallGeometry = new THREE.ExtrudeGeometry(wallShape, {
@@ -200,11 +202,11 @@ function build3DPlan() {
         wallMesh.castShadow = true;
         wallMesh.receiveShadow = true;
         wallMesh.position.set(
-            ((wall.start.x + wall.end.x) / 2) / meter,
+            to3DX((wall.start.x + wall.end.x) / 2),
             WALL_HEIGHT_3D / 2,
-            -((wall.start.y + wall.end.y) / 2) / meter
+            to3DZ((wall.start.y + wall.end.y) / 2)
         );
-        wallMesh.rotation.y = -Math.atan2(dy, dx);
+        wallMesh.rotation.y = -Math.atan2(dy, -dx);
         threeDState.planGroup.add(wallMesh);
     }
 
@@ -215,7 +217,7 @@ function build3DPlan() {
         const shape = new THREE.Shape();
         for (let p = 0; p < room.coords.length; p++) {
             const point = room.coords[p];
-            const px = point.x / meter;
+            const px = to3DX(point.x);
             const py = point.y / meter;
             if (p === 0) shape.moveTo(px, py);
             else shape.lineTo(px, py);
@@ -287,8 +289,9 @@ function build3DPlan() {
             addHandle(handleBaseX, hingeSign);
         }
 
-        doorGroup.position.set((obj.x || 0) / meter, 0, -((obj.y || 0) / meter));
-        doorGroup.rotation.y = -THREE.MathUtils.degToRad(obj.angle || 0);
+        doorGroup.position.set(to3DX(obj.x || 0), 0, to3DZ(obj.y || 0));
+        const doorYaw = -THREE.MathUtils.degToRad(obj.angle || 0);
+        doorGroup.rotation.y = Math.PI - doorYaw;
         threeDState.planGroup.add(doorGroup);
     }
 
@@ -302,7 +305,8 @@ function build3DPlan() {
         // Recenter geometry so the plan sits around world origin.
         threeDState.planGroup.position.set(-center.x, 0, -center.z);
 
-        threeDState.camera.position.set(distance, Math.max(size.y + 2, 5), distance);
+        // Keep -Z forward and -X side to align left/right with the 2D plan.
+        threeDState.camera.position.set(-distance, Math.max(size.y + 2, 5), -distance);
         threeDState.controls.target.set(0, 0.5, 0);
         threeDState.controls.update();
 
