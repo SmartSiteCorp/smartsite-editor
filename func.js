@@ -952,18 +952,35 @@ document.getElementById('report_mode').addEventListener("click", function () {
 
 });
 
-document.getElementById('wallWidth').addEventListener("input", function () {
-    let sliderValue = this.value;
-    binder.wall.thick = sliderValue;
+function setWallWidthCm(widthCm) {
+    if (!binder || !binder.wall) return false;
+
+    let normalizedWidth = String(widthCm).replace(',', '.');
+    let parsedWidth = Number(normalizedWidth);
+    if (!isFinite(parsedWidth) || parsedWidth < 7 || parsedWidth > 50) return false;
+
+    binder.wall.thick = parsedWidth;
     binder.wall.type = "normal";
     editor.architect(WALLS);
     let objWall = editor.objFromWall(binder.wall); // LIST OBJ ON EDGE
     for (let w = 0; w < objWall.length; w++) {
-        objWall[w].thick = sliderValue;
+        objWall[w].thick = parsedWidth;
         objWall[w].update();
     }
     rib();
-    document.getElementById("wallWidthVal").textContent = sliderValue;
+    document.getElementById("wallWidth").value = parsedWidth.toFixed(1);
+    document.getElementById("wallWidthVal").textContent = parsedWidth.toFixed(1);
+    return true;
+}
+
+document.getElementById('wallWidth').addEventListener("change", function () {
+    if (!setWallWidthCm(this.value)) {
+        if (binder && binder.wall) {
+            let wallWidth = Number(binder.wall.thick || 0).toFixed(1);
+            this.value = wallWidth;
+            document.getElementById("wallWidthVal").textContent = wallWidth;
+        }
+    }
 });
 
 function setWallLengthMeters(lengthMeters) {

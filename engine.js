@@ -1775,8 +1775,8 @@ function _MOUSEUP(event) {
           document.getElementById('wallWidth').setAttribute('min', 7);
           document.getElementById('wallWidth').setAttribute('max', 50);
           document.getElementById('wallWidthScale').textContent = "7-50";
-          document.getElementById("wallWidth").value = binder.wall.thick;
-          document.getElementById("wallWidthVal").textContent = binder.wall.thick;
+          document.getElementById("wallWidth").value = Number(binder.wall.thick).toFixed(1);
+          document.getElementById("wallWidthVal").textContent = Number(binder.wall.thick).toFixed(1);
           var currentWallLength = (qSVG.measure(binder.wall.start, binder.wall.end) / meter).toFixed(2);
           document.getElementById("wallLength").value = currentWallLength;
           document.getElementById("wallLengthVal").textContent = currentWallLength;
