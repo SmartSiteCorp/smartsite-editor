@@ -70,7 +70,7 @@ function init3DView() {
     scene.background = new THREE.Color(0xf4eee3);
 
     const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
-    camera.position.set(8, 8, 8);
+    camera.position.set(-8, 8, -8);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.shadowMap.enabled = true;
@@ -156,6 +156,8 @@ function build3DPlan() {
 
     clear3DPlan();
     threeDState.planGroup.position.set(0, 0, 0);
+    const to3DX = (x) => -(x / meter);
+    const to3DZ = (y) => -(y / meter);
 
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf6f1e8, roughness: 0.8, metalness: 0.02 });
     const topMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdf8, roughness: 0.88, metalness: 0.01 });
@@ -169,9 +171,9 @@ function build3DPlan() {
 
         if (wall.coords && wall.coords.length >= 4) {
             const wallShape = new THREE.Shape();
-            wallShape.moveTo(wall.coords[0].x / meter, wall.coords[0].y / meter);
+            wallShape.moveTo(to3DX(wall.coords[0].x), wall.coords[0].y / meter);
             for (let c = 1; c < wall.coords.length; c++) {
-                wallShape.lineTo(wall.coords[c].x / meter, wall.coords[c].y / meter);
+                wallShape.lineTo(to3DX(wall.coords[c].x), wall.coords[c].y / meter);
             }
 
             const wallGeometry = new THREE.ExtrudeGeometry(wallShape, {
@@ -200,11 +202,11 @@ function build3DPlan() {
         wallMesh.castShadow = true;
         wallMesh.receiveShadow = true;
         wallMesh.position.set(
-            ((wall.start.x + wall.end.x) / 2) / meter,
+            to3DX((wall.start.x + wall.end.x) / 2),
             WALL_HEIGHT_3D / 2,
-            -((wall.start.y + wall.end.y) / 2) / meter
+            to3DZ((wall.start.y + wall.end.y) / 2)
         );
-        wallMesh.rotation.y = -Math.atan2(dy, dx);
+        wallMesh.rotation.y = -Math.atan2(dy, -dx);
         threeDState.planGroup.add(wallMesh);
     }
 
@@ -215,7 +217,7 @@ function build3DPlan() {
         const shape = new THREE.Shape();
         for (let p = 0; p < room.coords.length; p++) {
             const point = room.coords[p];
-            const px = point.x / meter;
+            const px = to3DX(point.x);
             const py = point.y / meter;
             if (p === 0) shape.moveTo(px, py);
             else shape.lineTo(px, py);
@@ -287,8 +289,9 @@ function build3DPlan() {
             addHandle(handleBaseX, hingeSign);
         }
 
-        doorGroup.position.set((obj.x || 0) / meter, 0, -((obj.y || 0) / meter));
-        doorGroup.rotation.y = -THREE.MathUtils.degToRad(obj.angle || 0);
+        doorGroup.position.set(to3DX(obj.x || 0), 0, to3DZ(obj.y || 0));
+        const doorYaw = -THREE.MathUtils.degToRad(obj.angle || 0);
+        doorGroup.rotation.y = Math.PI - doorYaw;
         threeDState.planGroup.add(doorGroup);
     }
 
@@ -302,7 +305,8 @@ function build3DPlan() {
         // Recenter geometry so the plan sits around world origin.
         threeDState.planGroup.position.set(-center.x, 0, -center.z);
 
-        threeDState.camera.position.set(distance, Math.max(size.y + 2, 5), distance);
+        // Keep -Z forward and -X side to align left/right with the 2D plan.
+        threeDState.camera.position.set(-distance, Math.max(size.y + 2, 5), -distance);
         threeDState.controls.target.set(0, 0.5, 0);
         threeDState.controls.update();
 
@@ -952,18 +956,124 @@ document.getElementById('report_mode').addEventListener("click", function () {
 
 });
 
-document.getElementById('wallWidth').addEventListener("input", function () {
-    let sliderValue = this.value;
-    binder.wall.thick = sliderValue;
+function setWallWidthCm(widthCm) {
+    if (!binder || !binder.wall) return false;
+
+    let normalizedWidth = String(widthCm).replace(',', '.');
+    let parsedWidth = Number(normalizedWidth);
+    if (!isFinite(parsedWidth) || parsedWidth < 7 || parsedWidth > 50) return false;
+
+    binder.wall.thick = parsedWidth;
     binder.wall.type = "normal";
     editor.architect(WALLS);
     let objWall = editor.objFromWall(binder.wall); // LIST OBJ ON EDGE
     for (let w = 0; w < objWall.length; w++) {
-        objWall[w].thick = sliderValue;
+        objWall[w].thick = parsedWidth;
         objWall[w].update();
     }
     rib();
-    document.getElementById("wallWidthVal").textContent = sliderValue;
+    document.getElementById("wallWidth").value = parsedWidth.toFixed(1);
+    document.getElementById("wallWidthVal").textContent = parsedWidth.toFixed(1);
+    return true;
+}
+
+document.getElementById('wallWidth').addEventListener("change", function () {
+    if (!setWallWidthCm(this.value)) {
+        if (binder && binder.wall) {
+            let wallWidth = Number(binder.wall.thick || 0).toFixed(1);
+            this.value = wallWidth;
+            document.getElementById("wallWidthVal").textContent = wallWidth;
+        }
+    }
+});
+
+function setWallLengthMeters(lengthMeters) {
+    if (!binder || !binder.wall) return false;
+
+    let wall = binder.wall;
+    let normalizedLength = String(lengthMeters).replace(',', '.');
+    let parsedLength = Number(normalizedLength);
+    if (!isFinite(parsedLength) || parsedLength < 0.1) return false;
+
+    let oldLength = qSVG.measure(wall.start, wall.end);
+    if (oldLength < 0.01) return false;
+
+    let oldEnd = { x: wall.end.x, y: wall.end.y };
+    let newLength = parsedLength * meter;
+    let ux = (wall.end.x - wall.start.x) / oldLength;
+    let uy = (wall.end.y - wall.start.y) / oldLength;
+    let newEnd = {
+        x: wall.start.x + (ux * newLength),
+        y: wall.start.y + (uy * newLength)
+    };
+
+    let objWall = editor.objFromWall(wall);
+    let objTracks = [];
+    for (let i = 0; i < objWall.length; i++) {
+        let obj = objWall[i];
+        let dist = qSVG.measure(wall.start, { x: obj.x, y: obj.y });
+        objTracks.push({ obj: obj, ratio: Math.max(0, Math.min(1, dist / oldLength)) });
+    }
+
+    wall.end = newEnd;
+
+    if (wall.child != null) {
+        if (isObjectsEquals(wall.child.start, oldEnd)) wall.child.start = { x: newEnd.x, y: newEnd.y };
+        else if (isObjectsEquals(wall.child.end, oldEnd)) wall.child.end = { x: newEnd.x, y: newEnd.y };
+    }
+    if (wall.parent != null) {
+        if (isObjectsEquals(wall.parent.start, oldEnd)) wall.parent.start = { x: newEnd.x, y: newEnd.y };
+        else if (isObjectsEquals(wall.parent.end, oldEnd)) wall.parent.end = { x: newEnd.x, y: newEnd.y };
+    }
+
+    let angleWall = qSVG.angleDeg(wall.start.x, wall.start.y, wall.end.x, wall.end.y);
+    let eqWall = editor.createEquationFromWall(wall);
+    for (let i = 0; i < objTracks.length; i++) {
+        let objTarget = objTracks[i].obj;
+        let along = newLength * objTracks[i].ratio;
+        objTarget.x = wall.start.x + (ux * along);
+        objTarget.y = wall.start.y + (uy * along);
+        objTarget.angle = angleWall;
+        if (objTarget.angleSign == 1) objTarget.angle = angleWall + 180;
+
+        let limits = limitObj(eqWall, objTarget.size, objTarget);
+        if (qSVG.btwn(limits[0].x, wall.start.x, wall.end.x) && qSVG.btwn(limits[0].y, wall.start.y, wall.end.y) &&
+            qSVG.btwn(limits[1].x, wall.start.x, wall.end.x) && qSVG.btwn(limits[1].y, wall.start.y, wall.end.y)) {
+            objTarget.limit = limits;
+            objTarget.update();
+        }
+        else {
+            objTarget.graph.remove();
+            let indexObj = OBJDATA.indexOf(objTarget);
+            if (indexObj > -1) OBJDATA.splice(indexObj, 1);
+        }
+    }
+
+    editor.architect(WALLS);
+
+    if (binder.graph && binder.graph[0] && binder.graph[0].children && binder.graph[0].children.length >= 3) {
+        binder.graph[0].children[0].setAttribute("x2", newEnd.x);
+        binder.graph[0].children[0].setAttribute("y2", newEnd.y);
+        binder.graph[0].children[2].setAttribute("cx", newEnd.x);
+        binder.graph[0].children[2].setAttribute("cy", newEnd.y);
+    }
+
+    inWallRib(wall);
+    rib();
+    refresh3DView();
+    document.getElementById("wallLength").value = parsedLength.toFixed(2);
+    document.getElementById("wallLengthVal").textContent = parsedLength.toFixed(2);
+    return true;
+}
+
+document.getElementById('wallLength').addEventListener("change", function () {
+    if (!setWallLengthMeters(this.value)) {
+        if (binder && binder.wall) {
+            let wallLength = (qSVG.measure(binder.wall.start, binder.wall.end) / meter).toFixed(2);
+            this.value = wallLength;
+            document.getElementById("wallLengthVal").textContent = wallLength;
+        }
+    }
 });
 
 document.getElementById("bboxTrash").addEventListener("click", function () {

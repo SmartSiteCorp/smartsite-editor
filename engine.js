@@ -1757,6 +1757,7 @@ function _MOUSEUP(event) {
           else if (binder.wall.type == 'separate') {
             $('#separate').hide();
             $('#rangeThick').hide();
+            $('#rangeLength').show();
             $('#recombine').show();
             $('#cutWall').hide();
             document.getElementById('titleWallTools').textContent = "Modify the separation";
@@ -1765,6 +1766,7 @@ function _MOUSEUP(event) {
             $('#cutWall').show();
             $('#separate').show();
             $('#rangeThick').show();
+            $('#rangeLength').show();
             $('#recombine').hide();
             document.getElementById('titleWallTools').textContent = "Modify the wall";
             $('#boxinfo').html('Modify the wall');
@@ -1773,8 +1775,11 @@ function _MOUSEUP(event) {
           document.getElementById('wallWidth').setAttribute('min', 7);
           document.getElementById('wallWidth').setAttribute('max', 50);
           document.getElementById('wallWidthScale').textContent = "7-50";
-          document.getElementById("wallWidth").value = binder.wall.thick;
-          document.getElementById("wallWidthVal").textContent = binder.wall.thick;
+          document.getElementById("wallWidth").value = Number(binder.wall.thick).toFixed(1);
+          document.getElementById("wallWidthVal").textContent = Number(binder.wall.thick).toFixed(1);
+          var currentWallLength = (qSVG.measure(binder.wall.start, binder.wall.end) / meter).toFixed(2);
+          document.getElementById("wallLength").value = currentWallLength;
+          document.getElementById("wallLengthVal").textContent = currentWallLength;
           mode = 'edit_wall_mode';
         }
         equation1 = null;
