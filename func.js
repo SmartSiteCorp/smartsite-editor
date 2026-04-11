@@ -966,6 +966,95 @@ document.getElementById('wallWidth').addEventListener("input", function () {
     document.getElementById("wallWidthVal").textContent = sliderValue;
 });
 
+function setWallLengthMeters(lengthMeters) {
+    if (!binder || !binder.wall) return false;
+
+    let wall = binder.wall;
+    let normalizedLength = String(lengthMeters).replace(',', '.');
+    let parsedLength = Number(normalizedLength);
+    if (!isFinite(parsedLength) || parsedLength < 0.1) return false;
+
+    let oldLength = qSVG.measure(wall.start, wall.end);
+    if (oldLength < 0.01) return false;
+
+    let oldEnd = { x: wall.end.x, y: wall.end.y };
+    let newLength = parsedLength * meter;
+    let ux = (wall.end.x - wall.start.x) / oldLength;
+    let uy = (wall.end.y - wall.start.y) / oldLength;
+    let newEnd = {
+        x: wall.start.x + (ux * newLength),
+        y: wall.start.y + (uy * newLength)
+    };
+
+    let objWall = editor.objFromWall(wall);
+    let objTracks = [];
+    for (let i = 0; i < objWall.length; i++) {
+        let obj = objWall[i];
+        let dist = qSVG.measure(wall.start, { x: obj.x, y: obj.y });
+        objTracks.push({ obj: obj, ratio: Math.max(0, Math.min(1, dist / oldLength)) });
+    }
+
+    wall.end = newEnd;
+
+    if (wall.child != null) {
+        if (isObjectsEquals(wall.child.start, oldEnd)) wall.child.start = { x: newEnd.x, y: newEnd.y };
+        else if (isObjectsEquals(wall.child.end, oldEnd)) wall.child.end = { x: newEnd.x, y: newEnd.y };
+    }
+    if (wall.parent != null) {
+        if (isObjectsEquals(wall.parent.start, oldEnd)) wall.parent.start = { x: newEnd.x, y: newEnd.y };
+        else if (isObjectsEquals(wall.parent.end, oldEnd)) wall.parent.end = { x: newEnd.x, y: newEnd.y };
+    }
+
+    let angleWall = qSVG.angleDeg(wall.start.x, wall.start.y, wall.end.x, wall.end.y);
+    let eqWall = editor.createEquationFromWall(wall);
+    for (let i = 0; i < objTracks.length; i++) {
+        let objTarget = objTracks[i].obj;
+        let along = newLength * objTracks[i].ratio;
+        objTarget.x = wall.start.x + (ux * along);
+        objTarget.y = wall.start.y + (uy * along);
+        objTarget.angle = angleWall;
+        if (objTarget.angleSign == 1) objTarget.angle = angleWall + 180;
+
+        let limits = limitObj(eqWall, objTarget.size, objTarget);
+        if (qSVG.btwn(limits[0].x, wall.start.x, wall.end.x) && qSVG.btwn(limits[0].y, wall.start.y, wall.end.y) &&
+            qSVG.btwn(limits[1].x, wall.start.x, wall.end.x) && qSVG.btwn(limits[1].y, wall.start.y, wall.end.y)) {
+            objTarget.limit = limits;
+            objTarget.update();
+        }
+        else {
+            objTarget.graph.remove();
+            let indexObj = OBJDATA.indexOf(objTarget);
+            if (indexObj > -1) OBJDATA.splice(indexObj, 1);
+        }
+    }
+
+    editor.architect(WALLS);
+
+    if (binder.graph && binder.graph[0] && binder.graph[0].children && binder.graph[0].children.length >= 3) {
+        binder.graph[0].children[0].setAttribute("x2", newEnd.x);
+        binder.graph[0].children[0].setAttribute("y2", newEnd.y);
+        binder.graph[0].children[2].setAttribute("cx", newEnd.x);
+        binder.graph[0].children[2].setAttribute("cy", newEnd.y);
+    }
+
+    inWallRib(wall);
+    rib();
+    refresh3DView();
+    document.getElementById("wallLength").value = parsedLength.toFixed(2);
+    document.getElementById("wallLengthVal").textContent = parsedLength.toFixed(2);
+    return true;
+}
+
+document.getElementById('wallLength').addEventListener("change", function () {
+    if (!setWallLengthMeters(this.value)) {
+        if (binder && binder.wall) {
+            let wallLength = (qSVG.measure(binder.wall.start, binder.wall.end) / meter).toFixed(2);
+            this.value = wallLength;
+            document.getElementById("wallLengthVal").textContent = wallLength;
+        }
+    }
+});
+
 document.getElementById("bboxTrash").addEventListener("click", function () {
     binder.obj.graph.remove();
     binder.graph.remove();
